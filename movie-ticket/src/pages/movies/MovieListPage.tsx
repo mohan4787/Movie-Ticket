@@ -85,9 +85,11 @@ const MovieListPage = () => {
         <div className="flex gap-3">
           <NavLink
             to={"/admin/movie/" + val}
-            className="flex bg-teal-700 rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800 hover:scale-96"
+            className={
+              "flex bg-teal-700! rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800! hover:scale-96"
+            }
           >
-            <EditOutlined className="text-white" />
+            <EditOutlined className="text-white!" />
           </NavLink>
           <Popconfirm
             title="Are you sure?"

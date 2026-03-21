@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { IShowTimeCreateData } from "../pages/showtime/ShowTimeCreatePage";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Status } from "../config/constants";
+import { InputType, Status } from "../config/constants";
 import { SelectOptionsField, TextInput } from "./form/FormInput";
 import { useForm } from "react-hook-form";
 import { CancleButton, SubmitButton } from "./button/FormButton";
@@ -79,21 +79,23 @@ const ShowTimeForm = ({
           </div>
         </div>
          <div className="flex w-full">
-          <label className="w-1/3">Date:{""}</label>
-          <div className="w-2/3">
-            <TextInput
-              control={control}
-              name="date"
-              errMsg={errors?.date?.message}
-            />
-          </div>
+        <label className="w-1/3">Date:{""}</label>
+        <div className="w-2/3">
+          <TextInput
+            control={control}
+            name="date"
+            type={InputType.DATE}
+            errMsg={errors?.date?.message}
+          />
         </div>
+      </div>
          <div className="flex w-full">
           <label className="w-1/3">Start Time:{""}</label>
           <div className="w-2/3">
             <TextInput
               control={control}
               name="startTime"
+              type={InputType.Time}
               errMsg={errors?.startTime?.message}
             />
           </div>
@@ -104,6 +106,7 @@ const ShowTimeForm = ({
             <TextInput
               control={control}
               name="endTime"
+              type={InputType.Time}
               errMsg={errors?.endTime?.message}
             />
           </div>

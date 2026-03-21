@@ -1,5 +1,11 @@
 import { NavLink } from "react-router";
-import { PaginationDefault, Status, type IImageType, type IPaginationType, type IPaginationWithSearchType } from "../../config/constants";
+import {
+  PaginationDefault,
+  Status,
+  type IImageType,
+  type IPaginationType,
+  type IPaginationWithSearchType,
+} from "../../config/constants";
 import { Input, Popconfirm, Table } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { toast } from "sonner";
@@ -7,7 +13,7 @@ import upcomingmovieService from "../../services/upcomingmovie.service";
 import { useEffect, useState } from "react";
 
 export interface IUpComingMovieData {
-    _id: string;
+  _id: string;
   title: string;
   slug: string;
   status: typeof Status;
@@ -17,9 +23,93 @@ export interface IUpComingMovieData {
   preBookingAvailable: boolean;
 }
 
-
 const UpComingMovieListPage = () => {
-     const columns = [
+  const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>("");
+  const [data, setData] = useState<IUpComingMovieData[]>([]);
+  const [pagination, setPagination] = useState<IPaginationType>({
+    current: PaginationDefault.page,
+    pageSize: PaginationDefault.limit,
+    total: PaginationDefault.total,
+  });
+
+  const getUpcomingMovieList = async ({
+    page = PaginationDefault.page,
+    limit = PaginationDefault.limit,
+    search = "",
+  }: IPaginationWithSearchType) => {
+    setLoading(true);
+    try {
+      const response = await upcomingmovieService.getRequest("/upcomingmovie", {
+        params: { page, limit, search },
+      });
+
+      console.log("API RESPONSE:", response);
+
+      const resData = response?.data;
+
+      // ✅ Handle object or array safely
+      const movieList = Array.isArray(resData)
+        ? resData
+        : resData
+          ? [resData]
+          : [];
+
+      setData(movieList);
+
+      // ✅ Fallback pagination
+      setPagination({
+        current: page,
+        pageSize: limit,
+        total: movieList.length,
+      });
+    } catch (error: any) {
+      console.error("API ERROR:", error);
+
+      toast.error("Upcoming Movies cannot be fetched", {
+        description:
+          error?.response?.data?.message || error?.message || "Server error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUpcomingMovieList({
+      page: PaginationDefault.page,
+      limit: PaginationDefault.limit,
+      search: "",
+    });
+  }, []);
+
+  const onPaginationChange = async (page: number, pageSize: number) => {
+    await getUpcomingMovieList({ page, limit: pageSize, search });
+  };
+
+  const onDeleteConfirm = async (movieId: string) => {
+    setLoading(true);
+    try {
+      await upcomingmovieService.deleteRequest(`/upcomingmovie/${movieId}`);
+
+      toast.success("Upcoming Movie Deleted Successfully");
+
+      getUpcomingMovieList({
+        page: pagination.current,
+        limit: pagination.pageSize,
+        search,
+      });
+    } catch (error: any) {
+      toast.error("Upcoming Movie cannot be deleted", {
+        description:
+          error?.response?.data?.message || error?.message || "Delete failed",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns = [
     {
       key: "title",
       title: "Title",
@@ -31,11 +121,11 @@ const UpComingMovieListPage = () => {
       dataIndex: "status",
       render: (val: string) =>
         val === Status.ACTIVE ? (
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+          <span className="px-3 py-1 rounded-full text-xs bg-green-100 text-green-700">
             Active
           </span>
         ) : (
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+          <span className="px-3 py-1 rounded-full text-xs bg-red-100 text-red-700">
             Inactive
           </span>
         ),
@@ -46,7 +136,7 @@ const UpComingMovieListPage = () => {
       dataIndex: "poster",
       render: (val: IImageType) => (
         <img
-          src={val?.optimizeUrl || "https://placehold.co/80x120"}
+          src={val?.optimizeUrl ?? "https://placehold.co/80x120"}
           className="max-w-20 rounded"
         />
       ),
@@ -55,13 +145,13 @@ const UpComingMovieListPage = () => {
       key: "genre",
       title: "Genre",
       dataIndex: "genre",
-      render: (val: string[]) => val.join(", "),
+      render: (val: string[]) => val?.join(", "),
     },
     {
       key: "expectedReleaseDate",
       title: "Expected Release Date",
       dataIndex: "expectedReleaseDate",
-      render: (val: string) => new Date(val).toLocaleDateString(),
+      render: (val: string) => (val ? new Date(val).toLocaleDateString() : "-"),
     },
     {
       key: "preBookingAvailable",
@@ -77,17 +167,19 @@ const UpComingMovieListPage = () => {
         <div className="flex gap-3">
           <NavLink
             to={"/admin/upcomingmovie/" + val}
-            className="flex bg-teal-700 rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800 hover:scale-96"
+            className={
+              "flex bg-teal-700! rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800! hover:scale-96"
+            }
           >
-            <EditOutlined className="text-white" />
+            <EditOutlined className="text-white!" />
           </NavLink>
+
           <Popconfirm
             title="Are you sure?"
-            description="Once deleted, the content cannot be recovered."
+            description="Once deleted, cannot recover."
             onConfirm={() => onDeleteConfirm(val)}
-            okText="Confirm"
           >
-            <button className="flex bg-red-700 rounded-full w-10 h-10 items-center justify-center transition hover:bg-red-800 hover:scale-96">
+            <button className="flex bg-red-700 rounded-full w-10 h-10 items-center justify-center hover:bg-red-800">
               <DeleteOutlined className="text-white" />
             </button>
           </Popconfirm>
@@ -95,81 +187,20 @@ const UpComingMovieListPage = () => {
       ),
     },
   ];
-  const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState<IUpComingMovieData[]>([]);
-  const [pagination, setPagination] = useState<IPaginationType>({
-    current: PaginationDefault.page,
-    pageSize: PaginationDefault.limit,
-    total: PaginationDefault.total,
-  });
-  
-  const getUpcomingMovieList = async ({
-    page = PaginationDefault.page,
-    limit = PaginationDefault.limit,
-    search = "",
-  }: IPaginationWithSearchType) => {
-    setLoading(true);
-    try {
-      const response = await upcomingmovieService.getRequest("/upcoming-movie", {
-        params: { page, limit, search },
-      });
 
-      setData(response.data);
-      setPagination({
-        current: +response.options.pagination.current,
-        pageSize: +response.options.pagination.limit,
-        total: +response.options.pagination.total,
-      });
-    } catch {
-      toast.error("Upcoming Movies cannot be fetched", {
-        description: "Please try again later!",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getUpcomingMovieList({
-        page:PaginationDefault.page,
-        limit: PaginationDefault.limit,
-      search: "",
-    })
-  },[])
-  const onPaginationChange = async (page: number, pageSize: number) => {
-    await getUpcomingMovieList({page, limit:pageSize,search});
-  }
-  const onDeleteConfirm = async (movieId: string)  => {
-    setLoading(true);
-    try {
-        await upcomingmovieService.deleteRequest(`/upcoming-movie/${movieId}`);
-        toast.success("Upcoming Movie Deleted Successfully")
-        getUpcomingMovieList({page: pagination.current, limit: pagination.pageSize, search})
-    } catch (error: any) {
-        toast.error("Upcoming Movie cannot be deleted", {
-        description: error?.message || "An error occurred while deleting movie",
-        })
-    } finally {
-        setLoading(false)
-    }
-  }
-    return(<>
-     <div className="flex flex-col gap-5">
+  return (
+   <div className="flex flex-col gap-5">
       <div className="flex justify-between border-b border-b-gray-400 pb-3">
         <h1 className="text-4xl font-semibold text-teal-900">Upcoming Movie</h1>
         <div className="flex justify-center items-center gap-10">
           <div className="flex w-96">
-            <Input.Search
-              size="large"
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <Input.Search size="large" onChange={(e) => setSearch(e.target.value)} />
           </div>
-           <NavLink
-           to={"/admin/upcomingmovie/create"}
-            className="bg-teal-800! py-2 w-40 flex justify-center text-white! rounded-md hover:bg-teal-900! hover:cursor-pointer transition hover:scale-96"
+          <NavLink
+            to={"/admin/upcomingmovie/create"}
+            className="bg-teal-800! py-2 w-44 flex justify-center text-white! rounded-md hover:bg-teal-900! hover:cursor-pointer transition hover:scale-96"
           >
-            <PlusOutlined />  Add Upcoming Movie
+            <PlusOutlined /> Upcoming Movie
           </NavLink>
         </div>
       </div>
@@ -177,13 +208,13 @@ const UpComingMovieListPage = () => {
         <Table
           columns={columns}
           dataSource={data as Readonly<IUpComingMovieData[]>}
-          rowKey={(data) => data._id}
+          rowKey={(data: IUpComingMovieData) => data._id}
           loading={loading}
           pagination={{ ...pagination, onChange: onPaginationChange }}
         />
       </div>
     </div>
-    </>)
-}
+  );
+};
 
 export default UpComingMovieListPage;

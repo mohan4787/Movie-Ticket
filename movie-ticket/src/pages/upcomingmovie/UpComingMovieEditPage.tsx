@@ -6,9 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Spin } from "antd";
 import upcomingmovieService from "../../services/upcomingmovie.service";
-import type { IUpComingMovieData } from "./UpComingMovieListPage";
 import UpComingMovieForm, { type IUpcomingMovieData } from "../../components/upcomingmovie/UpComingMovieForm";
-
 
 const UpcomingMovieEditDTO = Yup.object({
   title: Yup.string().min(2).max(100).required(),
@@ -27,55 +25,54 @@ const UpcomingMovieEditDTO = Yup.object({
 
 const UpcomingMovieEditPage = () => {
   const navigate = useNavigate();
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [movieDetail, setMovieDetail] = useState<IUpcomingMovieData>();
-  const { setError } = useForm();
+  const formMethods = useForm<IUpcomingMovieData>();
 
   // Submit form
-  const submitForm = async (data: IUpComingMovieData) => {
+  const submitForm = async (data: IUpcomingMovieData) => {
     try {
       const formData = new FormData();
 
       Object.keys(data).forEach((key) => {
         // @ts-ignore
-        if (data[key] !== undefined && data[key] !== null) {
-          // Special case for genre: convert string → array
+        const value = data[key];
+        if (value !== undefined && value !== null) {
           if (key === "genre") {
             formData.append(key, JSON.stringify([data.genre]));
+          } else if (key === "preBookingAvailable") {
+            formData.append(key, value ? "true" : "false");
+          } else if (key === "poster" && value instanceof File) {
+            formData.append("poster", value);
+          } else if (key === "expectedReleaseDate") {
+            formData.append(key, new Date(value).toISOString());
           } else {
-            // @ts-ignore
-            formData.append(key, data[key]);
+            formData.append(key, value);
           }
         }
       });
 
       await upcomingmovieService.putRequest(
-        `/upcoming-movie/${params.id}`,
+        `/upcomingmovie/${params.id}`,
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      toast.success("Congratulations", {
-        description: "Upcoming Movie updated successfully",
-      });
-      navigate("/admin/upcoming-movies");
+      toast.success("Upcoming Movie updated successfully");
+      navigate("/admin/upcomingmovie"); // consistent route with create page
     } catch (exception: any) {
-      if (exception.error) {
+      if (exception?.error) {
         Object.keys(exception.error).forEach((field) => {
-          setError(field as keyof IUpComingMovieData, {
+          formMethods.setError(field as keyof IUpcomingMovieData, {
             message: exception.error[field],
           });
         });
       }
-      toast.error("Sorry! Cannot update upcoming movie at this moment", {
-        description:
-          "There are some issues while submitting the form. Please try again.",
-      });
+      toast.error(
+        "Cannot update upcoming movie at this moment",
+        { description: "There are some issues while submitting the form. Please try again." }
+      );
     }
   };
 
@@ -83,14 +80,12 @@ const UpcomingMovieEditPage = () => {
   const getMovieDetail = async () => {
     try {
       const response = await upcomingmovieService.getRequest(
-        `/upcoming-movie/${params.id}`
+        `/upcomingmovie/${params.id}`
       );
       setMovieDetail(response.data);
     } catch {
-      toast.error("Error!", {
-        description: "Error while fetching upcoming movie data...",
-      });
-      navigate("/admin/upcoming-movies");
+      toast.error("Error while fetching upcoming movie data");
+      navigate("/admin/upcomingmovie");
     } finally {
       setLoading(false);
     }
@@ -107,6 +102,7 @@ const UpcomingMovieEditPage = () => {
           Upcoming Movie Edit
         </h1>
       </div>
+
       <div className="flex">
         {loading ? (
           <div className="flex h-96 w-full justify-center items-center">

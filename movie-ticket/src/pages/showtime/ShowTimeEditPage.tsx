@@ -12,7 +12,6 @@ import ShowTimeForm from "../../components/ShowTimeForm";
 // ShowTime DTO Type
 export interface IShowTimeCreateData {
   movie: string;
-  theater?: string;
   screen: string;
   date: string;
   startTime: string;
@@ -21,10 +20,8 @@ export interface IShowTimeCreateData {
   status: (typeof Status)[keyof typeof Status];
 }
 
-// Validation schema matching your backend Joi
 const ShowTimeEditDTO = Yup.object({
   movie: Yup.string().required("Movie is required"),
-  theater: Yup.string().min(2).max(100).optional(),
   screen: Yup.string().min(1).max(50).required("Screen is required"),
   date: Yup.date().required("Date is required"),
   startTime: Yup.string()
@@ -60,7 +57,7 @@ const ShowTimeEditPage = () => {
   const submitForm = async (data: IShowTimeCreateData) => {
     try {
       await showtimeService.putRequest(`/showtime/${params.id}`, data, {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "multipaet/formdata" },
       });
       toast.success("Congratulations", {
         description: "ShowTime updated successfully",

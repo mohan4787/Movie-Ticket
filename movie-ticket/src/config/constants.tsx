@@ -16,7 +16,8 @@ export const InputType = {
   TEXT: "text",
   URL: "url",
   NUMBER: "number",
-  DATE: "date"
+  DATE: "date",
+  Time:"time"
 } as const;
 
 export type InputType = (typeof InputType)[keyof typeof InputType];
