@@ -49,7 +49,7 @@ const MovieEditPage = ()  => {
       toast.success("Congratulations", {
         description: "Movie updated successfully",
       });
-      navigate("/admin/movies")
+      navigate("/admin/movie")
         } catch (exception: any) {
             if (exception.error) {
         Object.keys(exception.error).forEach((field) => {

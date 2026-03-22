@@ -2,7 +2,6 @@ const Joi = require("joi");
 
 const ShowTimeCreateDTO = Joi.object({
   movie: Joi.string().required(),
-  //theater: Joi.string().min(2).max(100).required(),
   screen: Joi.string().min(1).max(50).required(),
   date: Joi.date().required(),
   startTime: Joi.string()

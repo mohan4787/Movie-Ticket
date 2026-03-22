@@ -6,7 +6,6 @@ import ShowTimeForm from "../../components/ShowTimeForm";
 
 export interface IShowTimeCreateData {
   movie: string;
-  theater?: string;
   screen: string;
   date: string;
   startTime: string;
@@ -15,59 +14,57 @@ export interface IShowTimeCreateData {
   status: (typeof Status)[keyof typeof Status];
 }
 const ShowTimeCreateDTO = Yup.object({
-  movie: Yup.string().required("Movie is required"),
-  screen: Yup.string().min(1, "Screen is required").max(50, "Screen max 50 chars").required(),
-  date: Yup.date().required("Date is required"),
+  movie: Yup.string().required(),
+  screen: Yup.string().min(1).max(50).required(),
+  date: Yup.date().required(),
   startTime: Yup.string()
-    .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Start time must be in HH:mm format")
-    .required("Start time is required"),
+    .matches(
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      "startTime must be in HH:mm format",
+    )
+    .required(),
   endTime: Yup.string()
-    .matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "End time must be in HH:mm format")
-    .required("End time is required")
-    .test(
-      "end-after-start",
-      "End time must be after start time",
-      function (value) {
-        const { startTime } = this.parent;
-        if (!startTime || !value) return true;
-        const [sh, sm] = startTime.split(":").map(Number);
-        const [eh, em] = value.split(":").map(Number);
-        return eh > sh || (eh === sh && em > sm);
-      }
-    ),
-  language: Yup.string().default("English").required(),
-  status: Yup.string().matches(/^(active|inactive)$/).default(Status.ACTIVE),
+    .matches(
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+      "endTime must be in HH:mm format",
+    )
+    .required(),
+  language: Yup.string().default("English"),
+  status: Yup.string()
+    .matches(/^(active|inactive)$/)
+    .default(Status.INACTIVE),
 });
 
 const submitForm = async (data: IShowTimeCreateData) => {
-    try {
-        await showtimeService.postRequest("showtime", data, {
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        toast.success("ShowTime Created Successfully", {
-        description: "ShowTime has been added to the database",
-      });
-    } catch (exception: any) {
-        toast.error(exception?.message || "Failed to create showtime");
-    }
-}
-
+  try {
+    await showtimeService.postRequest("showtime", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    toast.success("ShowTime Created Successfully", {
+      description: "ShowTime has been added to the database",
+    });
+  } catch (exception: any) {
+    toast.error(exception?.message || "Failed to create showtime");
+  }
+};
 
 const ShowTimeCreatePage = () => {
-    return(
-        <>
-        <div className="flex flex-col gap-5">
-      <div className="flex justify-between border-b border-b-gray-400 pb-3">
-        <h1 className="text-4xl font-semibold text-teal-900">ShowTime Create</h1>
+  return (
+    <>
+      <div className="flex flex-col gap-5">
+        <div className="flex justify-between border-b border-b-gray-400 pb-3">
+          <h1 className="text-4xl font-semibold text-teal-900">
+            ShowTime Create
+          </h1>
+        </div>
+        <div className="flex">
+          <ShowTimeForm submitForm={submitForm} DTO={ShowTimeCreateDTO} />
+        </div>
       </div>
-      <div className="flex">
-        <ShowTimeForm submitForm={submitForm} DTO={ShowTimeCreateDTO} />
-      </div>
-    </div>
-        </>
-    )
-}
+    </>
+  );
+};
 
 export default ShowTimeCreatePage;

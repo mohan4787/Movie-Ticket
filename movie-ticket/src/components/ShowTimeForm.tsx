@@ -30,8 +30,7 @@ const ShowTimeForm = ({
     formState: { errors, isSubmitting },
   } = useForm<IShowTimeCreateData>({
     defaultValues: {
-      movie: "",
-      theater: "",
+     // movie: "",
       screen: "",
       date: "",
       startTime: "",
@@ -44,7 +43,7 @@ const ShowTimeForm = ({
    useEffect(() => {
     if (!showTimeDetail) return;
 
-    setValue("movie", showTimeDetail.movie || "");
+    //setValue("movie", showTimeDetail.movie || "");
     setValue("screen", showTimeDetail.screen || "");
     setValue("date", showTimeDetail.date || "");
     setValue("startTime", showTimeDetail.startTime || "");

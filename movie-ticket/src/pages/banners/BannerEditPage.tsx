@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { Spin } from "antd";
 import BannerForm from "../../components/banner/BannerForm";
 import type { IBannerData } from "./BannerListPage";
-import { useForm } from "react-hook-form";
+//import { useForm } from "react-hook-form";
 
 const BannerEditDTO = Yup.object({
   title: Yup.string().min(3).max(100).required(),
@@ -27,27 +27,28 @@ const BannerEditPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const params = useParams();
   const [bannerDetail, setBannerDetail] = useState<IBannerData>();
-  const { setError } = useForm();
+ // const { setError } = useForm();
  
   const submitForm = async (data: IBannerCreateData) => {
     try {
-      await bannerService.putRequest("banner"+params.id, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+       await bannerService.putRequest(`/banner/${params.id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
       toast.success("Congratulation", {
         description: "Banner updated Successfully",
       });
-      navigate("/admin/banners");
+      navigate("/admin/banner");
     } catch (exception: any) {
-      if (exception.error) {
-        Object.keys(exception.error).map((field) => {
-          setError(field as keyof IBannerCreateData, {
-            message: exception.error[field],
-          });
-        });
-      }
+      // if (exception.error) {
+      //   Object.keys(exception.error).map((field) => {
+      //     setError(field as keyof IBannerCreateData, {
+      //       message: exception.error[field],
+      //     });
+      //   });
+      // }
       toast.error("Sorry! cannot updated banner at this moment", {
         description:
           "Seems there are some issues while submitting form. Please try again.",
@@ -56,7 +57,7 @@ const BannerEditPage = () => {
   };
   const getBannerDetail = async () => {
     try {
-      const response = await bannerService.getRequest("/banner/" + params.id);
+      const response = await bannerService.getRequest(`/banner/${params.id}`);
       setBannerDetail(response.data)
     } catch {
       toast.error("Error!!!", {

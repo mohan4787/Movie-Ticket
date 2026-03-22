@@ -3,7 +3,7 @@ const Joi = require("joi");
 const UpcomingMovieCreateDTO = Joi.object({
     title: Joi.string().min(2).max(100).required(),
     description: Joi.string().allow(null, "").default(null),
-    genre: Joi.array().items(Joi.string()).default([]),
+    genre:  Joi.string().required(),
     duration: Joi.number().allow(null).default(null),
     expectedReleaseDate: Joi.date().required(),
     language: Joi.string().default("English"),
@@ -16,7 +16,7 @@ const UpcomingMovieCreateDTO = Joi.object({
 const UpcomingMovieUpdateDTO = Joi.object({
     title: Joi.string().min(2).max(100).required(),
     description: Joi.string().allow(null, "").default(null),
-    genre: Joi.array().items(Joi.string()).default([]),
+   genre:  Joi.string().required(),
     duration: Joi.number().allow(null).default(null),
     expectedReleaseDate: Joi.date().required(),
     language: Joi.string().default("English"),

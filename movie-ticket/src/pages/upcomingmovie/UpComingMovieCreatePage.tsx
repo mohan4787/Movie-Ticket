@@ -14,7 +14,7 @@ export const UpcomingMovieCreateDTO = Yup.object({
   duration: Yup.number().nullable(),
   expectedReleaseDate: Yup.string().required(),
   language: Yup.string().required(),
-  poster: Yup.mixed().required(),
+  poster: Yup.mixed().nullable().notRequired(),
   teaserUrl: Yup.string()
     .nullable()
     .notRequired()

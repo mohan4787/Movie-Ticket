@@ -14,7 +14,7 @@ import bannerService from "../../services/banner.service";
 
 export interface IBannerData {
   _id: string;
-  url?: string;
+  link?: string;
   title: string;
   status: typeof Status;
   image: IImageType
@@ -150,7 +150,7 @@ const BannerListPage = () => {
   const ondeleteConfirm = async (bannerId: string) => {
     setLoading(true)
     try {
-      await bannerService.deleteRequest(`/banner/${bannerId}`)
+      await bannerService.deleteRequest('/banner/'+bannerId)
       toast.success("Banner deleted successfully!!!",{
         description: "Banner deleted successfully from the content"
       })

@@ -41,7 +41,7 @@ export interface IPaginationWithSearchType {
 }
 
 export interface IImageType {
-  optimizeUrl: string;
+  optimizedUrl: string;
   publicId: string;
   secureUrl: string;
 }

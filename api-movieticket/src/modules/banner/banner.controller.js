@@ -22,7 +22,8 @@ class BannerController {
       if (req.query.search) {
         filter = {
           ...filter,
-          title: new RegExp(req.query.search, "i"),
+         // title: new RegExp(req.query.search, "i"),
+         title: {[Option.iLink]:`%${req.query.search}%`}
         };
       }
       if (req.query.status) {

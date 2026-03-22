@@ -7,44 +7,46 @@ import {
   SingleFiledUpload,
   TextInput,
 } from "../../components/form/FormInput";
-import {
-  CancleButton,
-  SubmitButton,
-} from "../../components/button/FormButton";
+import { CancleButton, SubmitButton } from "../../components/button/FormButton";
 import { useEffect, useState } from "react";
 import type { IBannerData } from "../../pages/banners/BannerListPage";
 
 export interface IBannerFormProps {
-  DTO: any,
-  bannerDetail?: IBannerData | null,
-  submitForm: (data: IBannerCreateData) => void
+  DTO: any;
+  bannerDetail?: IBannerData | null;
+  submitForm: (data: IBannerCreateData) => void;
 }
 
-const BannerForm = ({submitForm, DTO, bannerDetail}: Readonly<IBannerFormProps>) => {
-   const [thumbUrl, setThumbUrl] = useState<string>("https://placehold.com/300x100");
-     const {
-        handleSubmit,
-        control,
-        formState: { errors, isSubmitting },
-        setValue,
-      } = useForm<IBannerCreateData>({
-        defaultValues: {
-          title: "",
-          status: Status.INACTIVE,
-          link: "",
-          image: null,
-        },
-        resolver: yupResolver(DTO) as any,
-      });
+const BannerForm = ({
+  submitForm,
+  DTO,
+  bannerDetail,
+}: Readonly<IBannerFormProps>) => {
+  const [thumbUrl, setThumbUrl] = useState<string>(
+    "https://placehold.com/300x100",
+  );
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+    setValue,
+  } = useForm<IBannerCreateData>({
+    defaultValues: {
+      title: "",
+      status: Status.INACTIVE,
+      link: "",
+      image: null,
+    },
+    resolver: yupResolver(DTO) as any,
+  });
   useEffect(() => {
-    if(bannerDetail) {
-      setValue("title", bannerDetail.title || "");
-      setValue("link", bannerDetail.url as string || "");
-      setValue("status",bannerDetail.status || Status.INACTIVE);
-      setThumbUrl(bannerDetail.image.optimizeUrl);
+    if (bannerDetail) {
+     setValue("title", bannerDetail.title);
+     setValue("link", bannerDetail.link as string);
+    // setValue("status",bannerDetail.status || null);
+     setThumbUrl(bannerDetail.image?.optimizedUrl);
     }
-  },[bannerDetail, setValue])
-
+  }, [bannerDetail, setValue]);
   return (
     <>
       <form

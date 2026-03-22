@@ -58,8 +58,8 @@ const MovieForm = ({submitForm,DTO,movieDetail}:Readonly<IMovieFormProps>) => {
   setValue("rating", movieDetail.rating || 0);
   setValue("status", movieDetail.status || Status.INACTIVE);
 
-  if ((movieDetail as any)?.poster?.optimizeUrl) {
-    setPosterUrl((movieDetail as any).poster.optimizeUrl);
+  if ((movieDetail as any)?.poster?.optimizedUrl) {
+    setPosterUrl((movieDetail as any).poster.optimizedUrl);
   }
 }, [movieDetail, setValue]);
   return (

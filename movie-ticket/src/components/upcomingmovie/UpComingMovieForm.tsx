@@ -74,8 +74,8 @@ const {
     setValue("teaserUrl", movieDetail.teaserUrl || "");
     setValue("preBookingAvailable", movieDetail.preBookingAvailable || false);
     setValue("status", movieDetail.status || Status.INACTIVE);
-    if (movieDetail?.poster?.optimizeUrl) {
-      setPosterUrl(movieDetail.poster.optimizeUrl);
+    if (movieDetail?.poster?.optimizedUrl) {
+      setPosterUrl(movieDetail.poster.optimizedUrl);
     }
   }, [movieDetail, setValue]);
 
@@ -223,8 +223,14 @@ const {
             />
           </div>
           <div className="w-1/4">
-            <img src={posterUrl} className="rounded" />
-          </div>
+      {posterUrl && (
+        <img
+          src={posterUrl}
+          alt="Poster Preview"
+          className="w-full h-auto rounded border"
+        />
+      )}
+    </div>
         </div>
       </div>
       <div className="flex w-full">
