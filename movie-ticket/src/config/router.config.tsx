@@ -20,6 +20,9 @@ import MovieEditPage from "../pages/movies/MovieEditPage";
 import ShowTimeListPage from "../pages/showtime/ShowTimeListPage";
 import ShowTimeCreatePage from "../pages/showtime/ShowTimeCreatePage";
 import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
+import TicketPage from "../pages/tickets/TicketPage";
+import ScannerPage from "../pages/tickets/ScannerPage";
+import BookingListPage from "../pages/booking/BookingListPage";
 
 const routerConfig = createBrowserRouter([
   {
@@ -44,25 +47,32 @@ const routerConfig = createBrowserRouter([
       },
     ],
   },
+  //  {
+  //   path: "/booking",
+  //   Component: BookingPage,
+  // },
   {
     path: "/admin",
     Component: AdminLayoutPage,
-    children:[
-      {index: true, Component:AdminDashboard},
-      {path: "banner", Component: BannerListPage},
-      {path: "banner/create", Component: BannerCreatePage},
-      {path: "banner/:id", Component: BannerEditPage},
-      {path: "movie",Component:MovieListPage},
-      {path: "movie/create",Component:MovieCreatePage},
-      {path: "movie/:id",Component:MovieEditPage},
-      {path: "upcomingmovie",Component:UpComingMovieListPage},
-      {path: "upcomingmovie/create",Component:UpComingMovieCreatePage},
-      {path: "upcomingmovie/:id",Component:UpComingMovieEditPage},
-      {path: "showtime",Component:ShowTimeListPage},
-      {path: "showtime/create",Component:ShowTimeCreatePage},
-      {path: "showtime/:id",Component:ShowTimeEditPage},
-      {path: "*", Component: ErrorNotFound}
-    ]
+    children: [
+      { index: true, Component: AdminDashboard },
+      { path: "banner", Component: BannerListPage },
+      { path: "banner/create", Component: BannerCreatePage },
+      { path: "banner/:id", Component: BannerEditPage },
+      { path: "movie", Component: MovieListPage },
+      { path: "movie/create", Component: MovieCreatePage },
+      { path: "movie/:id", Component: MovieEditPage },
+      { path: "upcomingmovie", Component: UpComingMovieListPage },
+      { path: "upcomingmovie/create", Component: UpComingMovieCreatePage },
+      { path: "upcomingmovie/:id", Component: UpComingMovieEditPage },
+      { path: "showtime", Component: ShowTimeListPage },
+      { path: "showtime/create", Component: ShowTimeCreatePage },
+      { path: "showtime/:id", Component: ShowTimeEditPage },
+     //{path: "/booking",Component:BookingListPage},
+      { path: "tickets", Component: TicketPage },
+      { path: "tickets/scanner", Component: ScannerPage },
+      { path: "*", Component: ErrorNotFound },
+    ],
   },
   {
     path: "*",
@@ -73,8 +83,8 @@ const routerConfig = createBrowserRouter([
 const RouterConfig = () => {
   return (
     <>
-        <Toaster richColors closeButton />
-        <RouterProvider router={routerConfig} />
+      <Toaster richColors closeButton />
+      <RouterProvider router={routerConfig} />
     </>
   );
 };

@@ -6,7 +6,40 @@ const { BookingCreateDTO } = require("./booking.validator");
 
 const bookingRouter = require("express").Router();
 
-bookingRouter.route("/")
-  .post(auth([USER_ROLES.ADMIN, USER_ROLES.USER]), bodyValidator(BookingCreateDTO), bookingCtrl.createBooking);
+// Create booking (hold seats)
+bookingRouter.post(
+  "/",
+  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  bodyValidator(BookingCreateDTO),
+  bookingCtrl.holdSeats   // ✅ standard method, no ()
+);
 
-  module.exports = bookingRouter;
+// Confirm booking
+bookingRouter.post(
+  "/confirm",
+  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  bookingCtrl.confirmBooking
+);
+
+// Cancel booking
+bookingRouter.post(
+  "/cancel",
+  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  bookingCtrl.cancelBooking
+);
+
+// Get booking by ID
+bookingRouter.get(
+  "/:bookingId",
+  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  bookingCtrl.getBookingDetailsById
+);
+
+// List bookings
+bookingRouter.get(
+  "/",
+  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  bookingCtrl.listAllBookings
+);
+
+module.exports = bookingRouter;

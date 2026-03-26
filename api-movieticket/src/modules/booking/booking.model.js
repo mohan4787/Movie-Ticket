@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const SeatSchema = new mongoose.Schema({
   seatNumber: {
@@ -24,6 +24,10 @@ const BookingSchema = new mongoose.Schema(
       required: true,
     },
     seats: [SeatSchema],
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid"],

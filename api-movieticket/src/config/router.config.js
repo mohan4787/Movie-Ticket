@@ -4,7 +4,7 @@ const bookingRouter = require("../modules/booking/booking.router")
 const movieRouter = require("../modules/movie/movie.router")
 const showtimeRouter = require("../modules/showtime/showtime.router")
 const upcomingMovieRouter = require("../modules/upcomingmovie/upcomingmovie.router")
-
+const ticketRouter = require("../modules/ticket/ticket.router");
 
 const router = require("express").Router()
 
@@ -24,5 +24,6 @@ router.use("/movie", movieRouter)
 router.use("/showtime",showtimeRouter)
 router.use("/upcomingmovie",upcomingMovieRouter)
 router.use("/booking", bookingRouter)
+router.use("/ticket",ticketRouter);
 
 module.exports = router

@@ -1,5 +1,5 @@
 import { Controller, useController } from "react-hook-form";
-import {  Button, Input, Radio, Select, Upload, } from "antd";
+import { Button, Input, Radio, Select, Upload } from "antd";
 import { InputType } from "../../config/constants";
 import { UploadOutlined } from "@ant-design/icons";
 import type { Dispatch, SetStateAction } from "react";
@@ -9,7 +9,7 @@ export interface IInputProps {
   name: string;
   errMsg?: string;
   type?: InputType;
-   setThumbUrl?: Dispatch<SetStateAction<string>>
+  setThumbUrl?: Dispatch<SetStateAction<string>>;
 }
 export interface ISingleSelectOption {
   label: string;
@@ -21,8 +21,9 @@ export interface ISelectOptionProps {
   name: string;
   errMsg?: string;
   options: Array<ISingleSelectOption>;
+  mode?: "multiple" | "tags";
+  placeholder?: string; 
 }
-
 
 export const EmailInput = ({
   control,
@@ -70,7 +71,7 @@ export const TextInput = ({
   control,
   name,
   errMsg = "",
-  type = InputType.TEXT
+  type = InputType.TEXT,
 }: Readonly<IInputProps>) => {
   const { field } = useController({
     name: name,
@@ -90,6 +91,7 @@ export const SelectOptionsField = ({
   control,
   errMsg = "",
   options,
+  mode,
 }: Readonly<ISelectOptionProps>) => {
   const { field } = useController({
     name: name,
@@ -103,6 +105,7 @@ export const SelectOptionsField = ({
       <Select
         {...field}
         showSearch
+         mode={mode} 
         placeholder="Select any one "
         optionFilterProp="label"
         onSearch={onSearch}
@@ -131,7 +134,12 @@ export const RadioButtonField = ({
   );
 };
 
-export const SingleFiledUpload = ({ name, control, errMsg = "", setThumbUrl=()=> {}}: Readonly<IInputProps>) => {
+export const SingleFiledUpload = ({
+  name,
+  control,
+  errMsg = "",
+  setThumbUrl = () => {},
+}: Readonly<IInputProps>) => {
   return (
     <>
       <Controller
@@ -141,10 +149,10 @@ export const SingleFiledUpload = ({ name, control, errMsg = "", setThumbUrl=()=>
           return (
             <>
               <Upload
-              className="w-full"
+                className="w-full"
                 beforeUpload={(file) => {
                   field.onChange(file);
-                  setThumbUrl(URL.createObjectURL(file))
+                  setThumbUrl(URL.createObjectURL(file));
                   return false;
                 }}
               >

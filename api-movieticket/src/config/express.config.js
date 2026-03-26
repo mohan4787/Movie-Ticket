@@ -5,6 +5,7 @@ const { deleteFile } = require("../utilities/helper");
 const cors = require("cors")
 const helmet = require("helmet")
 const {rateLimit} = require("express-rate-limit")
+//const { initSocket } = require("socket");
 const app = express();
 
 app.use(cors({
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", router);
+//const io = initSocket(server);
 
 // 404 handler
 app.use((req, res, next) => {
