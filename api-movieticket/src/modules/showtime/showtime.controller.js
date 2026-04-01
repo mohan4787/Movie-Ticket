@@ -1,3 +1,4 @@
+const ShowTimeModel = require("./showtime.model");
 const showtimeSvc = require("./showtime.service");
 
 class ShowTimeController {
@@ -152,6 +153,29 @@ class ShowTimeController {
       next(exception);
     }
   }
+
+ async getAllShowTimeByMovieId(req, res, next) {
+    try {
+        const movieId = req.params.movieId;
+        const getAllShowTime = await ShowTimeModel.find({ movieId: movieId });
+
+        // The Frontend EXPECTS 'options.pagination'
+        res.json({
+            data: getAllShowTime,
+            message: "Fetched all data successfully!!",
+            status: "SHOWTIME_LIST_FETCHED",
+            options: {
+                pagination: {
+                    current: 1,
+                    limit: getAllShowTime.length,
+                    total: getAllShowTime.length
+                }
+            }
+        });
+    } catch (exception) {
+        next(exception);
+    }
+}
 }
 
 const showtimeCtrl = new ShowTimeController();

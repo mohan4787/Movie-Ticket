@@ -19,7 +19,6 @@ import UpComingMovieEditPage from "../pages/upcomingmovie/UpComingMovieEditPage"
 import MovieEditPage from "../pages/movies/MovieEditPage";
 import ShowTimeListPage from "../pages/showtime/ShowTimeListPage";
 import ShowTimeCreatePage from "../pages/showtime/ShowTimeCreatePage";
-import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
 import TicketPage from "../pages/tickets/TicketPage";
 import ScannerPage from "../pages/tickets/ScannerPage";
 import BookingListPage from "../pages/booking/BookingListPage";
@@ -50,10 +49,6 @@ const routerConfig = createBrowserRouter([
       },
     ],
   },
-  //  {
-  //   path: "/booking",
-  //   Component: BookingPage,
-  // },
   {
     path: "/admin",
     Component: AdminLayoutPage,
@@ -68,9 +63,8 @@ const routerConfig = createBrowserRouter([
       { path: "upcomingmovie", Component: UpComingMovieListPage },
       { path: "upcomingmovie/create", Component: UpComingMovieCreatePage },
       { path: "upcomingmovie/:id", Component: UpComingMovieEditPage },
-      { path: "showtime", Component: ShowTimeListPage },
-      { path: "showtime/create", Component: ShowTimeCreatePage },
-      { path: "showtime/:id", Component: ShowTimeEditPage },
+      { path: "showtime/create/:id", Component: ShowTimeCreatePage },
+      { path: "showtime/:id", Component: ShowTimeListPage },
       { path: "booking", Component: BookingListPage },
       { path: "booking-detail/:id", Component: BookingDetailPage },
       { path: "tickets", Component: TicketPage },

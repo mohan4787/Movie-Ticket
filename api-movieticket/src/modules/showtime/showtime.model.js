@@ -3,7 +3,7 @@ const { Status } = require("../../config/constants");
 
 const ShowTimeSchema = new mongoose.Schema(
   {
-    movie: {
+    movieId: {
       type: mongoose.Types.ObjectId,
       ref: "Movie",
       required: true,
@@ -24,17 +24,9 @@ const ShowTimeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    language: {
-      type: String,
-      default: "English",
-    },
-    status: {
-      type: String,
-      enum: Object.values(Status),
-      default: Status.ACTIVE,
-    },
   },
   {
+    autoCreate: true,
     timestamps: true,
     autoIndex: true,
   }

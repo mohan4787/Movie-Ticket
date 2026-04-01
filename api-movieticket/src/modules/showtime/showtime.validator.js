@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const ShowTimeCreateDTO = Joi.object({
-  movie: Joi.string().required(),
+  movieId: Joi.string().required(),
   screen: Joi.string().min(1).max(50).required(),
   date: Joi.date().required(),
   startTime: Joi.string()
@@ -15,16 +15,11 @@ const ShowTimeCreateDTO = Joi.object({
     .required()
     .messages({
       "string.pattern.base": "endTime must be in HH:mm format",
-    }),
-  language: Joi.string().default("English"),
-  status: Joi.string()
-    .valid("active", "inactive")
-    .default("active"),
+    })
 });
 
 const ShowTimeUpdateDTO = Joi.object({
   movie: Joi.string().optional(),
- // theater: Joi.string().min(2).max(100).optional(),
   screen: Joi.string().min(1).max(50).optional(),
   date: Joi.date().optional(),
   startTime: Joi.string()
@@ -39,10 +34,6 @@ const ShowTimeUpdateDTO = Joi.object({
     .messages({
       "string.pattern.base": "endTime must be in HH:mm format",
     }),
-  language: Joi.string().optional(),
-  status: Joi.string()
-    .valid("active", "inactive")
-    .optional(),
 });
 
 module.exports = {

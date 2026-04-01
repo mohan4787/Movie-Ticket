@@ -1,26 +1,22 @@
 import { useEffect } from "react";
 import type { IShowTimeCreateData } from "../pages/showtime/ShowTimeCreatePage";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { InputType, Status } from "../config/constants";
-import { SelectOptionsField, TextInput } from "./form/FormInput";
+import { InputType } from "../config/constants";
+import { TextInput } from "./form/FormInput";
 import { useForm } from "react-hook-form";
 import { CancleButton, SubmitButton } from "./button/FormButton";
 
 export interface IShowTimeFormProps {
   DTO: any;
+  id: string | undefined;
   showTimeDetail?: IShowTimeCreateData | null;
   submitForm: (data: IShowTimeCreateData) => void;
 }
 
-const languageOptions = [
-  { label: "English", value: "English" },
-  { label: "Hindi", value: "Hindi" },
-  { label: "Nepali", value: "Nepali" },
-];
-
 const ShowTimeForm = ({
   submitForm,
   DTO,
+  id,
   showTimeDetail,
 }: Readonly<IShowTimeFormProps>) => {
   const {
@@ -30,55 +26,61 @@ const ShowTimeForm = ({
     formState: { errors, isSubmitting },
   } = useForm<IShowTimeCreateData>({
     defaultValues: {
-     // movie: "",
+      movieId: "",
       screen: "",
       date: "",
       startTime: "",
       endTime: "",
-      language: "English",
-      status: Status.ACTIVE,
     },
     resolver: yupResolver(DTO) as any,
   });
-   useEffect(() => {
+
+  // ✅ Ensure movieId is set
+  useEffect(() => {
+    if (id) {
+      setValue("movieId", id);
+    }
+  }, [id, setValue]);
+
+  // ✅ Edit mode support
+  useEffect(() => {
     if (!showTimeDetail) return;
 
-    //setValue("movie", showTimeDetail.movie || "");
+    setValue("movieId", showTimeDetail.movieId || "");
     setValue("screen", showTimeDetail.screen || "");
     setValue("date", showTimeDetail.date || "");
     setValue("startTime", showTimeDetail.startTime || "");
     setValue("endTime", showTimeDetail.endTime || "");
-    setValue("language", showTimeDetail.language || "English");
-    setValue("status", showTimeDetail.status || Status.ACTIVE);
   }, [showTimeDetail, setValue]);
 
   return (
-    <>
-      <form 
-      onSubmit={handleSubmit(submitForm)}
-       className="w-full flex flex-col gap-5">
-        <div className="flex w-full">
-          <label className="w-1/3">Movie:{""}</label>
-          <div className="w-2/3">
-            <TextInput
-              control={control}
-              name="movie"
-              errMsg={errors?.movie?.message}
-            />
-          </div>
+    <form
+      onSubmit={handleSubmit(
+        (data) => {
+          console.log("✅ FORM SUBMITTED:", data); // DEBUG
+          submitForm(data);
+        },
+        (errors) => {
+          console.log("❌ FORM ERRORS:", errors); // DEBUG
+        }
+      )}
+      className="w-full flex flex-col gap-5"
+    >
+      {/* Screen */}
+      <div className="flex w-full">
+        <label className="w-1/3">Screen:</label>
+        <div className="w-2/3">
+          <TextInput
+            control={control}
+            name="screen"
+            errMsg={errors?.screen?.message}
+          />
         </div>
-         <div className="flex w-full">
-          <label className="w-1/3">Screen:{""}</label>
-          <div className="w-2/3">
-            <TextInput
-              control={control}
-              name="screen"
-              errMsg={errors?.screen?.message}
-            />
-          </div>
-        </div>
-         <div className="flex w-full">
-        <label className="w-1/3">Date:{""}</label>
+      </div>
+
+      {/* Date */}
+      <div className="flex w-full">
+        <label className="w-1/3">Date:</label>
         <div className="w-2/3">
           <TextInput
             control={control}
@@ -88,62 +90,42 @@ const ShowTimeForm = ({
           />
         </div>
       </div>
-         <div className="flex w-full">
-          <label className="w-1/3">Start Time:{""}</label>
-          <div className="w-2/3">
-            <TextInput
-              control={control}
-              name="startTime"
-              type={InputType.Time}
-              errMsg={errors?.startTime?.message}
-            />
-          </div>
-        </div>
-         <div className="flex w-full">
-          <label className="w-1/3">End Time:{""}</label>
-          <div className="w-2/3">
-            <TextInput
-              control={control}
-              name="endTime"
-              type={InputType.Time}
-              errMsg={errors?.endTime?.message}
-            />
-          </div>
-        </div>
-        <div className="flex w-full">
-        <label className="w-1/3">Language:</label>
+
+      {/* Start Time */}
+      <div className="flex w-full">
+        <label className="w-1/3">Start Time:</label>
         <div className="w-2/3">
-          <SelectOptionsField
+          <TextInput
             control={control}
-            name="language"
-            options={languageOptions}
-            errMsg={errors?.language?.message}
+            name="startTime"
+            type={InputType.Time} // ✅ FIXED
+            errMsg={errors?.startTime?.message}
           />
         </div>
       </div>
-         <div className="flex w-full">
-        <label className="w-1/3">Status:</label>
+
+      {/* End Time */}
+      <div className="flex w-full">
+        <label className="w-1/3">End Time:</label>
         <div className="w-2/3">
-          <SelectOptionsField
+          <TextInput
             control={control}
-            name="status"
-            options={[
-              { label: "Active", value: "active" },
-              { label: "Inactive", value: "inactive" },
-            ]}
-            errMsg={errors?.status?.message}
+            name="endTime"
+            type={InputType.Time} // ✅ FIXED
+            errMsg={errors?.endTime?.message}
           />
         </div>
       </div>
-       <div className="flex w-full">
+
+      {/* Buttons */}
+      <div className="flex w-full">
         <div className="w-1/3"></div>
         <div className="flex gap-2 w-2/3">
           <CancleButton btnText="Cancel" isSubmitting={isSubmitting} />
           <SubmitButton btnText="Submit" isSubmitting={isSubmitting} />
         </div>
       </div>
-      </form>
-    </>
+    </form>
   );
 };
 

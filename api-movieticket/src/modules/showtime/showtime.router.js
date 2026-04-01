@@ -19,14 +19,15 @@ showtimeRouter
   .get(showtimeCtrl.listAllShowTimes);
 
 showtimeRouter
-  .route("/:showtimeId")
-  .get(showtimeCtrl.getShowTimeById)
+  .route("/:movieId")
+  .get(showtimeCtrl.getAllShowTimeByMovieId)
   .put(
     auth([USER_ROLES.ADMIN]),
     bodyValidator(ShowTimeUpdateDTO),
     showtimeCtrl.updateShowTimeById,
   )
   .delete(auth([USER_ROLES.ADMIN]), showtimeCtrl.deleteShowTimeById);
+
 showtimeRouter.route("/movie/:movieId").get(showtimeCtrl.getShowTimesByMovie);
 showtimeRouter.route("/date/:date").get(showtimeCtrl.getShowTimesByDate);
 

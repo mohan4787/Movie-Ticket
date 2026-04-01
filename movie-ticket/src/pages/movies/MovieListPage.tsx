@@ -7,7 +7,7 @@ import {
   type IPaginationType,
   type IPaginationWithSearchType,
 } from "../../config/constants";
-import { Input, Popconfirm, Table } from "antd";
+import { Input, Popconfirm, Table, Button } from "antd";
 import { useEffect, useState } from "react";
 import movieService from "../../services/movie.service";
 import { toast } from "sonner";
@@ -17,22 +17,93 @@ export interface IMovieData {
   title: string;
   status: typeof Status;
   poster?: IImageType;
-  genre: string;
+  genre: string[];
   releaseDate: string;
   rating: number;
 }
 
 const MovieListPage = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>("");
+  const [data, setData] = useState<Array<IMovieData>>([]);
+  const [pagination, setPagination] = useState<IPaginationType>({
+    current: PaginationDefault.page,
+    pageSize: PaginationDefault.limit,
+    total: PaginationDefault.total,
+  });
+
+  // ✅ Fetch movie list
+  const getMovieList = async ({
+    page = PaginationDefault.page,
+    limit = PaginationDefault.limit,
+    search = "",
+  }: IPaginationWithSearchType) => {
+    setLoading(true);
+    try {
+      const response = await movieService.getRequest("/movie", {
+        params: { page, limit, search },
+      });
+
+      setData(response.data);
+
+      setPagination({
+        current: +response.options.pagination.current,
+        pageSize: +response.options.pagination.limit,
+        total: +response.options.pagination.total,
+      });
+    } catch {
+      toast.error("Movies cannot be fetched", {
+        description: "Movies cannot be fetched at this moment!",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getMovieList({
+      page: PaginationDefault.page,
+      limit: PaginationDefault.limit,
+      search: "",
+    });
+  }, []);
+
+  // ✅ Pagination change
+  const onPaginationChange = async (page: number, pageSize: number) => {
+    await getMovieList({ page, limit: pageSize, search });
+  };
+
+  // ✅ Delete movie
+  const onDeleteConfirm = async (movieId: string) => {
+    setLoading(true);
+    try {
+      await movieService.deleteRequest(`/movie/${movieId}`);
+
+      toast.success("Movie deleted successfully", {
+        description: "Movie has been removed from the database",
+      });
+
+      // 🔥 Refresh list after delete
+      await getMovieList({
+        page: pagination.current,
+        limit: pagination.pageSize,
+        search,
+      });
+    } catch (error: any) {
+      toast.error("Movie cannot be deleted", {
+        description: error?.message || "An error occurred while deleting movie",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Table columns
   const columns = [
     {
       key: "title",
       title: "Title",
       dataIndex: "title",
-    },
-    {
-      key: "slug",
-      title: "Slug",
-      dataIndex: "slug",
     },
     {
       key: "status",
@@ -77,6 +148,20 @@ const MovieListPage = () => {
       title: "Rating",
       dataIndex: "rating",
     },
+
+    // ✅ View Showtime Button Column
+    {
+      key: "viewShowtime",
+      title: "View Showtime",
+      dataIndex: "_id",
+      render: (movieId: string) => (
+        <NavLink to={`/admin/showtime/${movieId}`}>
+          <Button type="primary">View Showtime</Button>
+        </NavLink>
+      ),
+    },
+
+    // ✅ Action Column
     {
       key: "action",
       title: "#",
@@ -85,12 +170,11 @@ const MovieListPage = () => {
         <div className="flex gap-3">
           <NavLink
             to={"/admin/movie/" + val}
-            className={
-              "flex bg-teal-700! rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800! hover:scale-96"
-            }
+            className="flex bg-teal-700! rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800! hover:scale-96"
           >
             <EditOutlined className="text-white!" />
           </NavLink>
+
           <Popconfirm
             title="Are you sure?"
             description="Once deleted, the content cannot be recovered."
@@ -105,77 +189,30 @@ const MovieListPage = () => {
       ),
     },
   ];
-  const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState<Array<IMovieData>>([]);
-  const [pagination, setPagination] = useState<IPaginationType>({
-    current: PaginationDefault.page,
-    pageSize: PaginationDefault.limit,
-    total: PaginationDefault.total,
-  });
-  const getMovieList = async ({
-    page = PaginationDefault.page,
-    limit = PaginationDefault.limit,
-    search = "",
-  }: IPaginationWithSearchType) => {
-    setLoading(true);
-    try {
-      const response = await movieService.getRequest("/movie", {
-        params: { page, limit, search },
-      });
-      setData(response.data);
-      setPagination({
-        current: +response.options.pagination.current,
-        pageSize: +response.options.pagination.limit,
-        total: +response.options.pagination.total,
-      });
-    } catch {
-      toast.error("Movies cannot be fetched", {
-        description: "Movies cannot be fetched at this moment!",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  useEffect(() => {
-    getMovieList({
-      page: PaginationDefault.page,
-      limit: PaginationDefault.limit,
-      search: "",
-    });
-  }, []);
-
-  const onPaginationChange = async (page: number, pageSize: number) => {
-    await getMovieList({ page, limit: pageSize, search });
-  };
-
-  const onDeleteConfirm = async (movieId: string) => {
-    setLoading(true);
-    try {
-      await movieService.deleteRequest(`/movie/${movieId}`);
-      toast.success("movie deleted successfully", {
-        description: "Movie has been removed from the database",
-      });
-    } catch (error: any) {
-      toast.error("Movie cannot be deleted", {
-        description: error?.message || "An error occurred while deleting movie",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <div className="flex flex-col gap-5">
+      {/* Header */}
       <div className="flex justify-between border-b border-b-gray-400 pb-3">
-        <h1 className="text-4xl font-semibold text-teal-900">Movie Page</h1>
+        <h1 className="text-4xl font-semibold text-teal-900">
+          Movie Page
+        </h1>
+
         <div className="flex justify-center items-center gap-10">
           <div className="flex w-96">
             <Input.Search
               size="large"
               onChange={(e) => setSearch(e.target.value)}
+              onSearch={(value) =>
+                getMovieList({
+                  page: 1,
+                  limit: pagination.pageSize,
+                  search: value,
+                })
+              }
             />
           </div>
+
           <NavLink
             to={"/admin/movie/create"}
             className="bg-teal-800! py-2 w-40 flex justify-center text-white! rounded-md hover:bg-teal-900! hover:cursor-pointer transition hover:scale-96"
@@ -184,6 +221,8 @@ const MovieListPage = () => {
           </NavLink>
         </div>
       </div>
+
+      {/* Table */}
       <div className="flex flex-col">
         <Table
           columns={columns}
@@ -196,4 +235,5 @@ const MovieListPage = () => {
     </div>
   );
 };
+
 export default MovieListPage;

@@ -6,12 +6,17 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Spin } from "antd";
 import upcomingmovieService from "../../services/upcomingmovie.service";
-import UpComingMovieForm, { type IUpcomingMovieData } from "../../components/upcomingmovie/UpComingMovieForm";
+import UpComingMovieForm, {
+  type IUpcomingMovieData,
+} from "../../components/upcomingmovie/UpComingMovieForm";
 
 const UpcomingMovieEditDTO = Yup.object({
   title: Yup.string().min(2).max(100).required(),
   description: Yup.string().nullable(),
-  genre: Yup.string().required(),
+  genre: Yup.array()
+    .of(Yup.string())
+    .min(1, "Select at least one genre")
+    .required(),
   duration: Yup.number().nullable(),
   expectedReleaseDate: Yup.string().required(),
   language: Yup.string().required(),
@@ -40,11 +45,13 @@ const UpcomingMovieEditPage = () => {
         const value = data[key];
         if (value !== undefined && value !== null) {
           if (key === "genre") {
-            formData.append(key, JSON.stringify([data.genre]));
+            formData.append(key, JSON.stringify(data.genre));
           } else if (key === "preBookingAvailable") {
             formData.append(key, value ? "true" : "false");
-          } else if (key === "poster" && value instanceof File) {
-            formData.append("poster", value);
+          } else if (key === "poster") {
+            if (value instanceof File) {
+              formData.append("poster", value);
+            }
           } else if (key === "expectedReleaseDate") {
             formData.append(key, new Date(value).toISOString());
           } else {
@@ -56,7 +63,7 @@ const UpcomingMovieEditPage = () => {
       await upcomingmovieService.putRequest(
         `/upcomingmovie/${params.id}`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
 
       toast.success("Upcoming Movie updated successfully");
@@ -69,10 +76,10 @@ const UpcomingMovieEditPage = () => {
           });
         });
       }
-      toast.error(
-        "Cannot update upcoming movie at this moment",
-        { description: "There are some issues while submitting the form. Please try again." }
-      );
+      toast.error("Cannot update upcoming movie at this moment", {
+        description:
+          "There are some issues while submitting the form. Please try again.",
+      });
     }
   };
 
@@ -80,7 +87,7 @@ const UpcomingMovieEditPage = () => {
   const getMovieDetail = async () => {
     try {
       const response = await upcomingmovieService.getRequest(
-        `/upcomingmovie/${params.id}`
+        `/upcomingmovie/${params.id}`,
       );
       setMovieDetail(response.data.data);
     } catch {

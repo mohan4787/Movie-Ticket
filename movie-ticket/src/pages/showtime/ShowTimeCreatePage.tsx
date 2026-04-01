@@ -1,69 +1,76 @@
 import { toast } from "sonner";
-import { Status } from "../../config/constants";
 import * as Yup from "yup";
 import showtimeService from "../../services/showtime.service";
 import ShowTimeForm from "../../components/ShowTimeForm";
+import {  useParams } from "react-router";
 
 export interface IShowTimeCreateData {
-  movie: string;
+  movieId: string;
   screen: string;
   date: string;
   startTime: string;
   endTime: string;
-  language: string;
-  status: (typeof Status)[keyof typeof Status];
 }
+
+// ✅ FIXED schema
 const ShowTimeCreateDTO = Yup.object({
-  movie: Yup.string().required(),
-  screen: Yup.string().min(1).max(50).required(),
-  date: Yup.date().required(),
+  movieId: Yup.string().required("Movie ID is required"),
+  screen: Yup.string().min(1).max(50).required("Screen is required"),
+  date: Yup.string().required("Date is required"), // ✅ FIXED
   startTime: Yup.string()
     .matches(
-      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-      "startTime must be in HH:mm format",
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/,
+      "Invalid time format"
     )
-    .required(),
+    .required("Start time is required"),
   endTime: Yup.string()
     .matches(
-      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-      "endTime must be in HH:mm format",
+      /^([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/,
+      "Invalid time format"
     )
-    .required(),
-  language: Yup.string().default("English"),
-  status: Yup.string()
-    .matches(/^(active|inactive)$/)
-    .default(Status.INACTIVE),
+    .required("End time is required"),
 });
 
+
 const submitForm = async (data: IShowTimeCreateData) => {
+  // const navigate = useNavigate();
   try {
+    // console.log("🚀 SUBMIT DATA:", data); // ✅ DEBUG
+
     await showtimeService.postRequest("showtime", data, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+
     toast.success("ShowTime Created Successfully", {
       description: "ShowTime has been added to the database",
     });
+    // navigate(`/admin/movie`);
   } catch (exception: any) {
-    toast.error(exception?.message || "Failed to create showtime");
+    toast.error("Failed to create showtime");
   }
 };
 
 const ShowTimeCreatePage = () => {
+  const { id } = useParams<{ id: string }>();
+
   return (
-    <>
-      <div className="flex flex-col gap-5">
-        <div className="flex justify-between border-b border-b-gray-400 pb-3">
-          <h1 className="text-4xl font-semibold text-teal-900">
-            ShowTime Create
-          </h1>
-        </div>
-        <div className="flex">
-          <ShowTimeForm submitForm={submitForm} DTO={ShowTimeCreateDTO} />
-        </div>
+    <div className="flex flex-col gap-5">
+      <div className="flex justify-between border-b border-b-gray-400 pb-3">
+        <h1 className="text-4xl font-semibold text-teal-900">
+          ShowTime Create
+        </h1>
       </div>
-    </>
+
+      <div className="flex">
+        <ShowTimeForm
+          submitForm={submitForm}
+          DTO={ShowTimeCreateDTO}
+          id={id}
+        />
+      </div>
+    </div>
   );
 };
 

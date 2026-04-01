@@ -1,13 +1,12 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Input, Popconfirm, Table } from "antd";
-import { NavLink } from "react-router";
+import { NavLink, useParams } from "react-router";
 import {
   PaginationDefault,
-  Status,
   type IPaginationType,
   type IPaginationWithSearchType,
 } from "../../config/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import showtimeService from "../../services/showtime.service";
 import { toast } from "sonner";
 
@@ -19,7 +18,7 @@ export interface IShowTimeDate {
   startTime: string;
   endTime: string;
   language: string;
-  status: typeof Status;
+  status: string; // Changed to string for better compatibility
 }
 
 const ShowTimeListPage = () => {
@@ -29,74 +28,96 @@ const ShowTimeListPage = () => {
   const [pagination, setPagination] = useState<IPaginationType>({
     current: PaginationDefault.page,
     pageSize: PaginationDefault.limit,
-    total: PaginationDefault.total,
+    total: 0, // Default to 0
   });
-  const getShowTimeList = async ({
+  
+  const { id } = useParams<{ id: string }>();
+
+  // Use callback to prevent unnecessary re-renders
+  const getShowTimeList = useCallback(async ({
     page = PaginationDefault.page,
     limit = PaginationDefault.limit,
     search = "",
   }: IPaginationWithSearchType) => {
     setLoading(true);
     try {
-      const response = await showtimeService.getRequest("/showtime", {
+      // Dynamic endpoint: if an 'id' exists in URL, use specific movie route
+      const endpoint = id ? `/showtime/${id}` : "/showtime";
+      
+      const response = await showtimeService.getRequest(endpoint, {
         params: { page, limit, search },
       });
-      setData(response.data);
-      setPagination({
-        current: +response.options.pagination.current,
-        pageSize: +response.options.pagination.limit,
-        total: +response.options.pagination.total,
-      });
-    } catch {
-      toast.error("ShowTimes cannot be fetched", {
-        description: "ShowTimes cannot be fetched at this moment!",
+
+      console.log("Fetched response:", response);
+      
+      setData(response.data || []);
+      
+      // Safety check for pagination metadata to prevent 500 crashes
+      if (response.options?.pagination) {
+        setPagination({
+          current: Number(response.options.pagination.current) || page,
+          pageSize: Number(response.options.pagination.limit) || limit,
+          total: Number(response.options.pagination.total) || 0,
+        });
+      }
+    } catch (error: any) {
+      toast.error("Fetch Error", {
+        description: error?.message || "ShowTimes cannot be fetched at this moment!",
       });
     } finally {
       setLoading(false);
     }
-  };
-  useEffect(() => {
-    getShowTimeList({
-      page: PaginationDefault.page,
-      limit: PaginationDefault.limit,
-      search: "",
-    });
-  }, []);
+  }, [id]);
 
-  const onPaginationChange = async (page: number, pageSize: number) => {
-    await getShowTimeList({ page, limit: pageSize, search });
+  // Handle Search Debounce
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      getShowTimeList({
+        page: 1, // Reset to page 1 on new search
+        limit: pagination.pageSize,
+        search: search,
+      });
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search, getShowTimeList]);
+
+  const onPaginationChange = (page: number, pageSize: number) => {
+    getShowTimeList({ page, limit: pageSize, search });
   };
 
   const onDeleteConfirm = async (id: string) => {
     setLoading(true);
     try {
       await showtimeService.deleteRequest(`/showtime/${id}`);
-      toast.success("ShowTime deleted successfully", {
-        description: "ShowTime has been removed from the database",
-      });
-      await getShowTimeList({
+      toast.success("ShowTime deleted successfully");
+      // Refetch current view
+      getShowTimeList({
         page: pagination.current,
         limit: pagination.pageSize,
         search,
       });
     } catch (error: any) {
-      toast.error("ShowTime cannot be deleted", {
-        description:
-          error?.message || "An error occurred while deleting ShowTime",
+      toast.error("Delete Failed", {
+        description: error?.message || "An error occurred while deleting",
       });
-    } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { key: "movie", title: "Movie", dataIndex: "movie" },
+    { 
+        key: "movie", 
+        title: "Movie", 
+        dataIndex: "movie",
+        render: (movie: any) => typeof movie === 'object' ? movie.title : movie 
+    },
     { key: "screen", title: "Screen", dataIndex: "screen" },
     {
       key: "date",
       title: "Date",
       dataIndex: "date",
-      render: (val: string) => new Date(val).toLocaleDateString(),
+      render: (val: string) => val ? new Date(val).toLocaleDateString() : "N/A",
     },
     { key: "startTime", title: "Start Time", dataIndex: "startTime" },
     { key: "endTime", title: "End Time", dataIndex: "endTime" },
@@ -106,7 +127,7 @@ const ShowTimeListPage = () => {
       title: "Status",
       dataIndex: "status",
       render: (val: string) =>
-        val === Status.ACTIVE ? (
+        val === "active" ? (
           <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
             Active
           </span>
@@ -118,25 +139,23 @@ const ShowTimeListPage = () => {
     },
     {
       key: "action",
-      title: "#",
+      title: "Action",
       dataIndex: "_id",
       render: (val: string) => (
         <div className="flex gap-3">
           <NavLink
             to={"/admin/showtime/" + val}
-            className={
-              "flex bg-teal-700! rounded-full w-10 h-10 items-center justify-center transition hover:bg-teal-800! hover:scale-96"
-            }
+            className="flex bg-teal-700 rounded-full w-8 h-8 items-center justify-center transition hover:bg-teal-800 hover:scale-95"
           >
-            <EditOutlined className="text-white!" />
+            <EditOutlined className="text-white" />
           </NavLink>
           <Popconfirm
             title="Are you sure?"
-            description="Once deleted, the content cannot be recovered."
             onConfirm={() => onDeleteConfirm(val)}
-            okText="Confirm"
+            okText="Yes"
+            cancelText="No"
           >
-            <button className="flex bg-red-700 rounded-full w-10 h-10 items-center justify-center transition hover:bg-red-800 hover:scale-96">
+            <button className="flex bg-red-600 rounded-full w-8 h-8 items-center justify-center transition hover:bg-red-700 hover:scale-95">
               <DeleteOutlined className="text-white" />
             </button>
           </Popconfirm>
@@ -146,38 +165,42 @@ const ShowTimeListPage = () => {
   ];
 
   return (
-    <>
-      <div className="flex flex-col gap-5">
-        <div className="flex justify-between border-b border-b-gray-400 pb-3">
-          <h1 className="text-4xl font-semibold text-teal-900">
-            ShowTime Page
-          </h1>
-          <div className="flex justify-center items-center gap-10">
-            <div className="flex w-96">
-              <Input.Search
-                size="large"
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <NavLink
-              to={"/admin/showtime/create"}
-              className="bg-teal-800! py-2 w-44 flex justify-center text-white! rounded-md hover:bg-teal-900! hover:cursor-pointer transition hover:scale-96"
-            >
-              <PlusOutlined /> Add ShowTime
-            </NavLink>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <Table
-            columns={columns}
-            dataSource={data as Readonly<IShowTimeDate[]>}
-            rowKey={(data: IShowTimeDate) => data._id}
-            loading={loading}
-            pagination={{ ...pagination, onChange: onPaginationChange }}
+    <div className="flex flex-col gap-5 p-4">
+      <div className="flex justify-between border-b border-gray-300 pb-4 items-center">
+        <h1 className="text-3xl font-semibold text-teal-900">
+          ShowTime Management
+        </h1>
+        <div className="flex items-center gap-4">
+          <Input.Search
+            placeholder="Search showtimes..."
+            className="w-64"
+            size="large"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
+          <NavLink
+            to={`/admin/showtime/create/${id || ""}`}
+            className="bg-teal-800 text-white px-4 py-2 rounded-md hover:bg-teal-900 transition flex items-center gap-2"
+          >
+            <PlusOutlined /> Add ShowTime
+          </NavLink>
         </div>
       </div>
-    </>
+
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey="_id"
+        loading={loading}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          onChange: onPaginationChange,
+          showSizeChanger: true,
+        }}
+      />
+    </div>
   );
 };
 

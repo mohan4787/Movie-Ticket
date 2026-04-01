@@ -10,7 +10,7 @@ import UpComingMovieForm from "../../components/upcomingmovie/UpComingMovieForm"
 export const UpcomingMovieCreateDTO = Yup.object({
   title: Yup.string().min(2).max(100).required(),
   description: Yup.string().nullable(),
-  genre: Yup.string().required(),
+  genre: Yup.array().of(Yup.string()).min(1, "Select at least one genre"),
   duration: Yup.number().nullable(),
   expectedReleaseDate: Yup.string().required(),
   language: Yup.string().required(),
@@ -38,7 +38,7 @@ const UpComingMovieCreatePage = () => {
         if (value !== undefined && value !== null) {
           if (key === "genre") {
             // backend expects array
-            formData.append(key, JSON.stringify([data.genre]));
+            formData.append(key, JSON.stringify(data.genre));
           } else if (key === "preBookingAvailable") {
             // boolean must be string "true"/"false"
             formData.append(key, value ? "true" : "false");
@@ -64,7 +64,9 @@ const UpComingMovieCreatePage = () => {
       navigate("/admin/upcomingmovie");
     } catch (exception: any) {
       toast.error(
-        exception?.response?.data?.message || exception?.message || "Failed to create upcoming movie"
+        exception?.response?.data?.message ||
+          exception?.message ||
+          "Failed to create upcoming movie",
       );
     }
   };
@@ -78,7 +80,10 @@ const UpComingMovieCreatePage = () => {
       </div>
 
       <div className="flex">
-        <UpComingMovieForm submitForm={submitForm} DTO={UpcomingMovieCreateDTO} />
+        <UpComingMovieForm
+          submitForm={submitForm}
+          DTO={UpcomingMovieCreateDTO}
+        />
       </div>
     </div>
   );
