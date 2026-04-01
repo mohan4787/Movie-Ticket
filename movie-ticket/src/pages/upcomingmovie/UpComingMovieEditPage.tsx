@@ -82,7 +82,7 @@ const UpcomingMovieEditPage = () => {
       const response = await upcomingmovieService.getRequest(
         `/upcomingmovie/${params.id}`
       );
-      setMovieDetail(response.data);
+      setMovieDetail(response.data.data);
     } catch {
       toast.error("Error while fetching upcoming movie data");
       navigate("/admin/upcomingmovie");

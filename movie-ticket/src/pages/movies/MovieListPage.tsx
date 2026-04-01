@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import {  NavLink } from "react-router";
+import { NavLink } from "react-router";
 import {
   PaginationDefault,
   Status,
@@ -53,10 +53,10 @@ const MovieListPage = () => {
       key: "poster",
       title: "Poster",
       dataIndex: "poster",
-      render: (val: IImageType) => (
+      render: (val: any) => (
         <img
-          src={val?.optimizeUrl || "https://placehold.com/80x120"}
-          className="max-w-20"
+          src={val?.optimizedUrl || "https://placehold.com/80x120"}
+          className="max-w-20 h-auto"
         />
       ),
     },
@@ -165,7 +165,7 @@ const MovieListPage = () => {
       setLoading(false);
     }
   };
-   return (
+  return (
     <div className="flex flex-col gap-5">
       <div className="flex justify-between border-b border-b-gray-400 pb-3">
         <h1 className="text-4xl font-semibold text-teal-900">Movie Page</h1>

@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const BookingCreateDTO = Joi.object({
-  userId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/),
+  userId: Joi.string().required(),
   movieId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/),
   showtimeId: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/),
   seats: Joi.array()
@@ -12,7 +12,7 @@ const BookingCreateDTO = Joi.object({
     )
     .min(1)
     .required(),
-  totalAmount: Joi.number().min(0).required(),
+  totalAmount: Joi.number().required(),
 });
 
 const BookingUpdateDTO = Joi.object({

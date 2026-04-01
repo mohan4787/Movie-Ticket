@@ -23,6 +23,9 @@ import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
 import TicketPage from "../pages/tickets/TicketPage";
 import ScannerPage from "../pages/tickets/ScannerPage";
 import BookingListPage from "../pages/booking/BookingListPage";
+import BookingDetailPage from "../pages/booking/BookingDetailsPage";
+// import BookingListPage from "../pages/booking/BookingListPage";
+// import BookingPage from "../pages/booking/BookingListPage";
 
 const routerConfig = createBrowserRouter([
   {
@@ -68,7 +71,8 @@ const routerConfig = createBrowserRouter([
       { path: "showtime", Component: ShowTimeListPage },
       { path: "showtime/create", Component: ShowTimeCreatePage },
       { path: "showtime/:id", Component: ShowTimeEditPage },
-     //{path: "/booking",Component:BookingListPage},
+      { path: "booking", Component: BookingListPage },
+      { path: "booking-detail/:id", Component: BookingDetailPage },
       { path: "tickets", Component: TicketPage },
       { path: "tickets/scanner", Component: ScannerPage },
       { path: "*", Component: ErrorNotFound },

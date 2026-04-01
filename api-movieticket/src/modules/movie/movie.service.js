@@ -54,7 +54,7 @@ class MovieService extends BaseService {
       releaseDate: row.releaseDate,
       rating: row.rating,
       status: row.status,
-      poster: row.poster?.optimizedUrl || null,
+     poster: row.poster || null,
 
       createdBy: row.createdBy
         ? {

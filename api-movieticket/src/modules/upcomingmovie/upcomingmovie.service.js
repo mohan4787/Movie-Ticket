@@ -55,7 +55,7 @@ class UpcomingMovieService extends BaseService {
       teaserUrl: row.teaserUrl || null,
       preBookingAvailable: row.preBookingAvailable || false,
       status: row.status,
-      poster: row.poster?.optimizedUrl || null,
+      poster: row.poster || null,
 
       createdBy: row.createdBy
         ? {

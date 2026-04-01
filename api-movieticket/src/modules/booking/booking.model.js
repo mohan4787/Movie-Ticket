@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const SeatSchema = new mongoose.Schema({
@@ -13,6 +14,7 @@ const SeatSchema = new mongoose.Schema({
 });
 const BookingSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     movieId: {
       type: mongoose.Types.ObjectId,
       ref: "Movie",

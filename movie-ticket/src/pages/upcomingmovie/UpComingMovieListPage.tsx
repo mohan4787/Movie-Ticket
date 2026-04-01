@@ -11,6 +11,7 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { toast } from "sonner";
 import upcomingmovieService from "../../services/upcomingmovie.service";
 import { useEffect, useState } from "react";
+import { useRef } from "react";
 
 export interface IUpComingMovieData {
   _id: string;
@@ -21,11 +22,13 @@ export interface IUpComingMovieData {
   genre: string[];
   expectedReleaseDate: string;
   preBookingAvailable: boolean;
+  teaserUrl?: string;
 }
 
 const UpComingMovieListPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>("");
+  const searchTimeout = useRef<any>(null);
   const [data, setData] = useState<IUpComingMovieData[]>([]);
   const [pagination, setPagination] = useState<IPaginationType>({
     current: PaginationDefault.page,
@@ -43,32 +46,27 @@ const UpComingMovieListPage = () => {
       const response = await upcomingmovieService.getRequest("/upcomingmovie", {
         params: { page, limit, search },
       });
+      // console.log("i am here:",response);
+      
+      const resData = response?.data || [];
+      console.log("Fetched movies array:", resData);
 
-      console.log("API RESPONSE:", response);
+      const paginationData = response?.data?.options?.pagination;
 
-      const resData = response?.data;
+      setData(resData);
 
-      // ✅ Handle object or array safely
-      const movieList = Array.isArray(resData)
-        ? resData
-        : resData
-          ? [resData]
-          : [];
-
-      setData(movieList);
-
-      // ✅ Fallback pagination
-      setPagination({
-        current: page,
-        pageSize: limit,
-        total: movieList.length,
-      });
+      if (paginationData) {
+        setPagination({
+          current: paginationData.current,
+          pageSize: paginationData.limit,
+          total: paginationData.total,
+        });
+      }
     } catch (error: any) {
-      console.error("API ERROR:", error);
-
+      console.error("Error fetching upcoming movies:", error);
       toast.error("Upcoming Movies cannot be fetched", {
         description:
-          error?.response?.data?.message || error?.message || "Server error",
+          error?.response?.message || error?.message || "Server error",
       });
     } finally {
       setLoading(false);
@@ -102,7 +100,7 @@ const UpComingMovieListPage = () => {
     } catch (error: any) {
       toast.error("Upcoming Movie cannot be deleted", {
         description:
-          error?.response?.data?.message || error?.message || "Delete failed",
+          error?.response?.message || error?.message || "Delete failed",
       });
     } finally {
       setLoading(false);
@@ -136,22 +134,57 @@ const UpComingMovieListPage = () => {
       dataIndex: "poster",
       render: (val: IImageType) => (
         <img
-          src={val?.optimizeUrl ?? "https://placehold.co/80x120"}
-          className="max-w-20 rounded"
+          src={
+            val?.optimizedUrl || val?.secureUrl || "https://placehold.co/80x120"
+          }
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://placehold.co/80x120";
+          }}
+          className="w-20 h-28 object-cover rounded"
+          alt="poster"
         />
       ),
     },
+    //  {
+    //   key: "poster",
+    //   title: "Poster",
+    //   dataIndex: "poster",
+    //   render: (val: any) => (
+    //     <img
+    //       src={val?.optimizedUrl || "https://placehold.com/80x120"}
+    //       className="max-w-20 h-auto"
+    //     />
+    //   ),
+    // },
     {
       key: "genre",
       title: "Genre",
       dataIndex: "genre",
-      render: (val: string[]) => val?.join(", "),
+      render: (val: string[]) => val?.join(", ") || "-",
     },
     {
       key: "expectedReleaseDate",
       title: "Expected Release Date",
       dataIndex: "expectedReleaseDate",
       render: (val: string) => (val ? new Date(val).toLocaleDateString() : "-"),
+    },
+    {
+      key: "teaserUrl",
+      title: "Teaser",
+      dataIndex: "teaserUrl",
+      render: (val: string) =>
+        val ? (
+          <a
+            href={val}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            Watch
+          </a>
+        ) : (
+          "-"
+        ),
     },
     {
       key: "preBookingAvailable",
@@ -189,12 +222,32 @@ const UpComingMovieListPage = () => {
   ];
 
   return (
-   <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <div className="flex justify-between border-b border-b-gray-400 pb-3">
         <h1 className="text-4xl font-semibold text-teal-900">Upcoming Movie</h1>
         <div className="flex justify-center items-center gap-10">
           <div className="flex w-96">
-            <Input.Search size="large" onChange={(e) => setSearch(e.target.value)} />
+            <Input.Search
+              size="large"
+              allowClear
+              placeholder="Search movies..."
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearch(value);
+
+                if (searchTimeout.current) {
+                  clearTimeout(searchTimeout.current);
+                }
+
+                searchTimeout.current = setTimeout(() => {
+                  getUpcomingMovieList({
+                    page: 1,
+                    limit: pagination.pageSize,
+                    search: value,
+                  });
+                }, 500);
+              }}
+            />
           </div>
           <NavLink
             to={"/admin/upcomingmovie/create"}

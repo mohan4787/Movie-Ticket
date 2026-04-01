@@ -11,35 +11,41 @@ bookingRouter.post(
   "/",
   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
   bodyValidator(BookingCreateDTO),
-  bookingCtrl.holdSeats   // ✅ standard method, no ()
+  bookingCtrl.holdSeats, // ✅ standard method, no ()
 );
 
 // Confirm booking
 bookingRouter.post(
   "/confirm",
   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
-  bookingCtrl.confirmBooking
+  bookingCtrl.confirmBooking,
 );
 
 // Cancel booking
 bookingRouter.post(
   "/cancel",
   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
-  bookingCtrl.cancelBooking
+  bookingCtrl.cancelBooking,
 );
 
 // Get booking by ID
+// bookingRouter.get(
+//   "/:bookingId",
+//   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+//   bookingCtrl.getBookingDetailsById,
+// );
+
 bookingRouter.get(
-  "/:bookingId",
+  "/:UserId",
   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
-  bookingCtrl.getBookingDetailsById
+  bookingCtrl.getBookingDetailByUserId,
 );
 
 // List bookings
 bookingRouter.get(
   "/",
   auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
-  bookingCtrl.listAllBookings
+  bookingCtrl.listAllBookings,
 );
 
 module.exports = bookingRouter;

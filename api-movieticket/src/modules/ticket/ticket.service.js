@@ -14,12 +14,13 @@ class TicketService {
     const tickets = [];
 
     for (const seat of booking.seats) {
-      const { qrCode } = await generateQR(bookingId, seat);
+      const seatNumber= seat.seatNumber;
+      const { qrCode } = await generateQR(bookingId, seatNumber);
 
       const ticket = await Ticket.create({
         bookingId,
-        userId: booking.userId,
-        seatNumber: seat,
+        userId: booking.createdBy,
+        seatNumber,
         qrCode,
       });
 
@@ -54,6 +55,18 @@ class TicketService {
 
     return this.publicTicketData(ticket);
   }
+    async getTicketsByBooking(bookingId) {
+    const tickets = await Ticket.find({ bookingId });
+
+    return tickets.map(t => this.publicTicketData(t));
+  }
+    async getUserTickets(userId) {
+    const tickets = await Ticket.find({ userId })
+      .sort({ createdAt: -1 });
+
+    return tickets.map(t => this.publicTicketData(t));
+  }
+
 
   publicTicketData(ticket) {
     return {
