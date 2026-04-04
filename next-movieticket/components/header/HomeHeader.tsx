@@ -53,15 +53,14 @@ const HomeHeader = () => {
                   Upcoming Movie
                 </Link>
               </li>
-
-              <li>
+              {/* <li>
                 <Link
-                  href="/showtimes"
+                  href="/movie"
                   className="text-gray-700 hover:text-red-600"
                 >
-                  Showtimes
+                  Showtime
                 </Link>
-              </li>
+              </li> */}
 
               <li>
                 <Link

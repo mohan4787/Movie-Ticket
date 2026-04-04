@@ -16,13 +16,18 @@ const MovieCard = ({ movie }: { movie: IMovieData }) => {
   const router = useRouter();
   const isInactive = movie.status !== "active";
 
+  const handleClick = () => {
+    if (!isInactive) {
+      // Navigate to showtime page
+      router.push(`/showtime/${movie._id}`);
+    }
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}
       className="group cursor-pointer"
-      onClick={() => {
-        if (!isInactive) router.push(`/booking/${movie._id}`);
-      }}
+      onClick={handleClick}
     >
       <div className="relative rounded-3xl overflow-hidden">
         <img
@@ -40,13 +45,17 @@ const MovieCard = ({ movie }: { movie: IMovieData }) => {
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
           <button
             disabled={isInactive}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/movie/${movie._id}/showtime`);
+            }}
             className={`px-5 py-2 rounded-lg font-semibold transition ${
               isInactive
                 ? "bg-gray-300 text-gray-500"
                 : "bg-red-600 text-white hover:bg-red-700"
             }`}
           >
-            🎟 Buy Now
+            Book now
           </button>
         </div>
       </div>
