@@ -208,7 +208,7 @@ export default function MovieBookingSystem() {
             </div>
 
             {/* Support Box */}
-            <div className="bg-indigo-50 border border-indigo-100 rounded-[2rem] p-6 flex items-start gap-4">
+            <div className="bg-indigo-50 border border-indigo-100 `rounded-4xl` p-6 flex items-start gap-4">
               <div className="p-3 bg-white rounded-2xl shadow-sm text-indigo-600">
                 <Info className="w-5 h-5" />
               </div>

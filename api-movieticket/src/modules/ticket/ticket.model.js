@@ -19,7 +19,10 @@ const TicketSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  pdfUrl: String,
+    pdfUrl: {
+      type: String,
+      default: null,
+    },
   status: {
     type: String,
     enum: ["valid", "used"],

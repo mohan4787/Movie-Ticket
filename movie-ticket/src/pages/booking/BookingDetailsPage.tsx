@@ -54,8 +54,6 @@ const BookingDetailPage: React.FC = () => {
         console.log("Fetching booking for userId:", id);
         const response = await bookingService.getRequest(`/booking/${id}`);
         console.log("API response:", response);
-
-        // Store actual booking object in state
         setBooking(response.data);
       } catch (err) {
         console.error("Error fetching booking details", err);
@@ -86,7 +84,7 @@ const BookingDetailPage: React.FC = () => {
         <div className="bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-zinc-800">
           
           {/* Top Section */}
-          <div className="relative h-48 bg-gradient-to-r from-indigo-600 to-purple-700 p-8 flex items-end">
+          <div className="relative h-48 `bg-gradient-to-r` from-indigo-600 to-purple-700 p-8 flex items-end">
             <div className="absolute top-4 right-6 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest">
               Digital Entry Pass
             </div>

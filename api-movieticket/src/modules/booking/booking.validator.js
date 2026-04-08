@@ -16,7 +16,6 @@ const BookingCreateDTO = Joi.object({
 });
 
 const BookingUpdateDTO = Joi.object({
-  paymentStatus: Joi.string().valid("pending", "paid"),
   bookingStatus: Joi.string().valid("reserved", "confirmed", "cancelled"),
   seats: Joi.array().items(
     Joi.object({

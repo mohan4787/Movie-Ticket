@@ -19,7 +19,7 @@ class BookingController {
 
   async confirmBooking(req, res, next) {
     try {
-      const booking = await bookingSvc.confirmBooking(req.body);
+      const booking = await bookingSvc.confirmBooking(req.body.bookingId, req.userId);
 
       res.json({
         data: booking,
@@ -34,7 +34,7 @@ class BookingController {
 
   async cancelBooking(req, res, next) {
     try {
-      const booking = await bookingSvc.releaseSeats(req.body);
+      const booking = await bookingSvc.releaseSeats(req.body.bookingId, req.userId);
 
       res.json({
         data: booking,
@@ -44,46 +44,6 @@ class BookingController {
       });
     } catch (exception) {
       next(exception);
-    }
-  }
-
-  async getAllBooking(req, res, next) {
-    try {
-      const getAll = await BookingModel.find();
-      if (!getAll) {
-        throw {
-          code: 404,
-          message: "Not found bookings!",
-        };
-      }
-      res.json({
-        data: getAll,
-        message: "Booking Fetched Successfully!",
-      });
-    } catch (error) {}
-  }
-
-  async getBookingDetailByUserId(req, res, next) {
-    try {
-      const userId = req.params.UserId;
-
-      // Fetch booking for the user and populate user details
-      const bookingDetail = await BookingModel.findOne({ userId }).populate(
-        "userId",
-        "name email",
-      ); // pass a string with field names
-
-      if (!bookingDetail) {
-        return res.status(404).json({ message: "Booking not found" });
-      }
-
-      console.log(bookingDetail);
-
-      // Send response
-      return res.status(200).json({ data: bookingDetail });
-    } catch (error) {
-      console.error("Error fetching booking:", error);
-      next(error); // pass to error middleware
     }
   }
 

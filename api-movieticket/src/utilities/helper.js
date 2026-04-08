@@ -16,22 +16,6 @@ const deleteFile = (filePath) => {
     fs.unlinkSync(filePath);
   }
 };
-// let seats = [];
-// const generateSeats = () => {
-//   for (let i = 0; i < 9; i++) {
-//     for (let j = 1; j < 3; j++) {
-//       seats[i] = `A${i}${j}`;
-
-//       seats[i+8]= `B${i}${j}`;
-
-//        seats[i+16]= `C${i}${j}`;
-//     }
-//   }
-// //   console.log(seats);
-  
-// };
-
-// generateSeats();
 
 module.exports = {
   randomStringGenerator,

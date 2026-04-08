@@ -1,31 +1,41 @@
 const Ticket = require("./ticket.model");
-const Booking = require("../booking/booking.model");
 const { generateQR, verifyQR, generatePDF } = require("../../utilities/ticket.");
 
 class TicketService {
-  async createTickets(bookingId) {
-    const booking = await Booking.findById(bookingId);
-    if (!booking) throw new Error("Booking not found");
-    if (booking.status !== "confirmed") throw new Error("Booking not confirmed");
+  async createTickets(booking) {
+    if (!booking) throw new Error("Booking required");
 
-    const existing = await Ticket.find({ bookingId });
-    if (existing.length) return existing.map(this.publicTicketData);
+    if (booking.bookingStatus !== "confirmed") {
+      throw new Error("Booking not confirmed");
+    }
+
+    const existing = await Ticket.find({ bookingId: booking._id });
+    if (existing.length) {
+      return existing.map((t) => this.publicTicketData(t));
+    }
 
     const tickets = [];
 
     for (const seat of booking.seats) {
-      const seatNumber= seat.seatNumber;
-      const { qrCode } = await generateQR(bookingId, seatNumber);
+      const seatNumber = seat.seatNumber;
 
       const ticket = await Ticket.create({
-        bookingId,
-        userId: booking.createdBy,
+        bookingId: booking._id,
+        userId: booking.userId,
         seatNumber,
-        qrCode,
+        qrCode: "temp",
       });
 
+      const { qrCode } = await generateQR(
+        booking._id,
+        seatNumber,
+        ticket._id
+      );
+
+      ticket.qrCode = qrCode;
       const pdfUrl = await generatePDF(ticket, booking);
       ticket.pdfUrl = pdfUrl;
+
       await ticket.save();
 
       tickets.push(this.publicTicketData(ticket));
@@ -36,37 +46,39 @@ class TicketService {
 
   async verifyTicket(qrToken) {
     let decoded;
+
     try {
       decoded = verifyQR(qrToken);
     } catch {
-      throw new Error("Invalid/expired QR");
+      throw new Error("Invalid or expired QR");
     }
 
-    const ticket = await Ticket.findOne({
-      bookingId: decoded.bookingId,
-      seatNumber: decoded.seat,
-    });
+    const ticket = await Ticket.findById(decoded.ticketId);
 
     if (!ticket) throw new Error("Ticket not found");
-    if (ticket.status !== "valid") throw new Error("Already used");
+
+    if (
+      ticket.bookingId.toString() !== decoded.bookingId ||
+      ticket.seatNumber !== decoded.seat
+    ) {
+      throw new Error("QR data mismatch");
+    }
+
+    if (ticket.status !== "valid") {
+      throw new Error("Ticket already used");
+    }
 
     ticket.status = "used";
     await ticket.save();
 
     return this.publicTicketData(ticket);
   }
-    async getTicketsByBooking(bookingId) {
-    const tickets = await Ticket.find({ bookingId });
 
-    return tickets.map(t => this.publicTicketData(t));
+  async getUserTickets(userId) {
+    const tickets = await Ticket.find({ userId }).sort({ createdAt: -1 });
+
+    return tickets.map((t) => this.publicTicketData(t));
   }
-    async getUserTickets(userId) {
-    const tickets = await Ticket.find({ userId })
-      .sort({ createdAt: -1 });
-
-    return tickets.map(t => this.publicTicketData(t));
-  }
-
 
   publicTicketData(ticket) {
     return {
@@ -75,10 +87,9 @@ class TicketService {
       userId: ticket.userId,
       seatNumber: ticket.seatNumber,
       qrCode: ticket.qrCode,
-      pdfUrl: ticket.pdfUrl || null,
+      pdfUrl: ticket.pdfUrl,
       status: ticket.status,
       createdAt: ticket.createdAt,
-      updatedAt: ticket.updatedAt,
     };
   }
 }

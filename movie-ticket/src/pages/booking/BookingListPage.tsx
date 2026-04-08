@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Ticket, CheckCircle2, CreditCard, Calendar, Armchair, Loader2, AlertCircle } from 'lucide-react';
-import bookingService from '../../services/booking.service';
 
-// --- Interfaces (Matching your JSON structure) ---
+import { Ticket, CheckCircle2, Calendar, Armchair, Loader2, AlertCircle } from 'lucide-react';
+import bookingService from '../../services/booking.service';
+import { useEffect, useState } from 'react';
+
 interface Seat {
   seatNumber: string;
   status: string;
@@ -21,19 +20,19 @@ interface Booking {
   createdAt: string;
 }
 
-interface APIResponse {
-  data: {
-    data: Booking[];
-    pagination: {
-      total: number;
-      limit: number;
-      skip: number;
-      pages: number;
-    };
-  };
-  message: string;
-  status: string;
-}
+// interface APIResponse {
+//   data: {
+//     data: Booking[];
+//     pagination: {
+//       total: number;
+//       limit: number;
+//       skip: number;
+//       pages: number;
+//     };
+//   };
+//   message: string;
+//   status: string;
+// }
 
 const BookingListPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -46,9 +45,6 @@ const BookingListPage = () => {
         setLoading(true);
         // Replace this URL with your actual backend endpoint
         const response = await bookingService.getRequest("/booking");
-        console.log(response);
-        
-        // Setting the data from the nested structure: response.data.data.data
         setBookings(response.data.data);
         setError(null);
       } catch (err) {
@@ -61,9 +57,6 @@ const BookingListPage = () => {
 
     fetchBookings();
   }, []);
-
-  console.log("Bookings:",bookings);
-
   
 
   const formatDate = (dateString: string) => {
@@ -117,7 +110,7 @@ const BookingListPage = () => {
           </div>
         ) : (
           <div className="grid gap-4">
-            {bookings.map((booking,index) => (
+            {bookings.map((booking) => (
               <div key={booking._id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   

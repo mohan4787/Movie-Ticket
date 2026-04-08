@@ -63,7 +63,6 @@ const auth = (role = null) => {
         };
       }
     } catch (exception) {
-     // next(exception);
      if(exception.hasOwnProperty('name') && exception.name === "TokenExpiredError"){
         next({
             code: 401,

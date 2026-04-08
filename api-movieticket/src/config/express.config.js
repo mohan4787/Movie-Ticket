@@ -5,7 +5,6 @@ const { deleteFile } = require("../utilities/helper");
 const cors = require("cors")
 const helmet = require("helmet")
 const {rateLimit} = require("express-rate-limit")
-//const { initSocket } = require("socket");
 const app = express();
 
 app.use(cors({

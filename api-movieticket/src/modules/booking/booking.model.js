@@ -1,3 +1,4 @@
+
 const { required } = require("joi");
 const mongoose = require("mongoose");
 
@@ -30,16 +31,12 @@ const BookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid"],
-      default: "pending",
-    },
     bookingStatus: {
       type: String,
       enum: ["reserved", "confirmed", "cancelled"],
       default: "reserved",
     },
+     expiresAt: { type: Date, required: true },
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",

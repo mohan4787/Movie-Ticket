@@ -23,6 +23,7 @@ import TicketPage from "../pages/tickets/TicketPage";
 import ScannerPage from "../pages/tickets/ScannerPage";
 import BookingListPage from "../pages/booking/BookingListPage";
 import BookingDetailPage from "../pages/booking/BookingDetailsPage";
+import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
 // import BookingListPage from "../pages/booking/BookingListPage";
 // import BookingPage from "../pages/booking/BookingListPage";
 
@@ -65,6 +66,8 @@ const routerConfig = createBrowserRouter([
       { path: "upcomingmovie/:id", Component: UpComingMovieEditPage },
       { path: "showtime/create/:id", Component: ShowTimeCreatePage },
       { path: "showtime/:id", Component: ShowTimeListPage },
+       { path: "showtime/edit/:id", Component: ShowTimeEditPage},
+
       { path: "booking", Component: BookingListPage },
       { path: "booking-detail/:id", Component: BookingDetailPage },
       { path: "tickets", Component: TicketPage },
