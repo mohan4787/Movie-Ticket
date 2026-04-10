@@ -13,27 +13,27 @@ const {
 
 orderRouter.post(
   "/",
-  // auth([USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
   bodyValidator(OrderCreateDTO),
   orderCtrl.createOrder
 );
 
 orderRouter.post(
   "/initiate-payment/:orderId",
-  auth([USER_ROLES.USER]),
+  // auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
   orderCtrl.initiatePayment
 );
 
 orderRouter.post(
   "/verify-payment",
-  auth([USER_ROLES.USER]),
+  // auth([USER_ROLES.USER]),
   bodyValidator(OrderVerifyPaymentDTO),
   orderCtrl.verifyPayment
 );
 
 orderRouter.get(
   "/my-orders",
-  auth([USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
   orderCtrl.getMyOrders
 );
 

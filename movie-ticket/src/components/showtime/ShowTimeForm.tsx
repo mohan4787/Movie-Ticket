@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import type { IShowTimeCreateData } from "../pages/showtime/ShowTimeCreatePage";
+import type { IShowTimeCreateData } from "../../pages/showtime/ShowTimeCreatePage";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { InputType } from "../config/constants";
-import { TextInput } from "./form/FormInput";
+import { InputType } from "../../config/constants";
+import { TextInput } from "../form/FormInput";
 import { useForm } from "react-hook-form";
-import { CancleButton, SubmitButton } from "./button/FormButton";
+import { CancleButton, SubmitButton } from "../button/FormButton";
 
 export interface IShowTimeFormProps {
   DTO: any;

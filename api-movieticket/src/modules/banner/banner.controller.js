@@ -22,8 +22,8 @@ class BannerController {
       if (req.query.search) {
         filter = {
           ...filter,
-         // title: new RegExp(req.query.search, "i"),
-         title: {[Option.iLink]:`%${req.query.search}%`}
+          // title: new RegExp(req.query.search, "i"),
+          title: { [Option.iLink]: `%${req.query.search}%` },
         };
       }
       if (req.query.status) {
@@ -49,7 +49,7 @@ class BannerController {
 
   async #getBannerDetail(bannerId) {
     this.#bannerDetail = await bannerSvc.getSingleRowByFilter({
-      _id:bannerId,
+      _id: bannerId,
     });
     if (!this.#bannerDetail) {
       throw {
@@ -59,7 +59,7 @@ class BannerController {
       };
     }
   }
- 
+
   // async getBannerDetailsById(req, res, next) {
   //   try {
   //     await this.#getBannerDetail(req.params.bannerId);
@@ -74,49 +74,81 @@ class BannerController {
   //   }
   // }
 
-getBannerDetailsById =async (req,res)=>{
-  try {
-    const id = req.params.id;
-    const getData = await bannerSvc.getDetail(id);
-    
-    res.json({
-      data:getData,
-      status:"Sucess",
-      detail:"Banner Found!!"
-    })
-  } catch (exception) {
-    throw exception
-  }
-}
-
-  async updateBannerById(req, res, next) {
+  getBannerDetailsById = async (req, res) => {
     try {
-      await this.#getBannerDetail(req.params.bannerId);
-      const payload = await bannerSvc.transformUpdateBannerData(req, this.#bannerDetail);
-      const update = await bannerSvc.updateSingleRowByFilter({_id: this.#bannerDetail._id}, payload)
-      res.json({
-        data: update,
-        message: "Banner updated successfully",
-        status: "BANNER_UPDATED",
-        options: null,
-      })
-    } catch (exception) {
-      return next(exception);
-    }
-  }
+      const id = req.params.bannerId;
+      const getData = await bannerSvc.getDetail(id);
 
+      res.json({
+        data: getData,
+        status: "Sucess",
+        detail: "Banner Found!!",
+      });
+    } catch (exception) {
+      throw exception;
+    }
+  };
+
+  updateBannerById = async (req, res, next) => {
+  try {
+    const bannerId = req.params.bannerId;
+
+    // Fetch the banner
+    const banner = await bannerSvc.getSingleRowByFilter({ _id: bannerId });
+
+    if (!banner) {
+      return res.status(404).json({
+        error: null,
+        message: "Banner not found",
+        status: "BANNER_NOT_FOUND",
+        options: null,
+      });
+    }
+
+    // Transform the update data (handles uploaded image if present)
+    const payload = await bannerSvc.transformUpdateBannerData(req, banner);
+
+    // Update the banner in DB
+    const update = await bannerSvc.updateSingleRowByFilter(
+      { _id: banner._id },
+      payload
+    );
+
+    res.json({
+      data: update,
+      message: "Banner updated successfully",
+      status: "BANNER_UPDATED",
+      options: null,
+    });
+  } catch (exception) {
+    next(exception);
+  }
+};
   async deleteBannerById(req, res, next) {
     try {
-      await this.#getBannerDetail(req.params.bannerId);
-      const deleteRow = await bannerSvc.deleteSingleRowByFilter({_id: this.#bannerDetail._id})
+      const bannerId = req.params.bannerId;
+
+      const banner = await bannerSvc.getSingleRowByFilter({ _id: bannerId });
+      if (!banner) {
+        return res.status(404).json({
+          error: null,
+          message: "Banner not found",
+          status: "BANNER_NOT_FOUND",
+          options: null,
+        });
+      }
+
+      const deleteRow = await bannerSvc.deleteSingleRowByFilter({
+        _id: bannerId,
+      });
       res.json({
         data: deleteRow,
         message: "Banner deleted successfully",
         status: "BANNER_DELETED",
         options: null,
-      })
+      });
     } catch (exception) {
-      next(exception)
+      next(exception);
     }
   }
 }

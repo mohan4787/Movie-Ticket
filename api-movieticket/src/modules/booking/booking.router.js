@@ -8,26 +8,31 @@ const bookingRouter = require("express").Router();
 
 bookingRouter.post(
   "/",
-  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
   bodyValidator(BookingCreateDTO),
   bookingCtrl.holdSeats,
 );
 bookingRouter.post(
   "/confirm",
-  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
   bookingCtrl.confirmBooking,
 );
 
 bookingRouter.post(
   "/cancel",
-  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
   bookingCtrl.cancelBooking,
 );
 
 bookingRouter.get(
   "/",
-  auth([USER_ROLES.ADMIN, USER_ROLES.USER]),
+  auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
   bookingCtrl.listAllBookings,
+);
+bookingRouter.get(
+  "/:bookingId",
+  // auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
+  bookingCtrl.getBookingDetails,
 );
 bookingRouter.post(
   "/auto-release",

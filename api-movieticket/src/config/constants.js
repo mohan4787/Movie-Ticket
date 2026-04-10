@@ -15,8 +15,15 @@ const GENDER = {
     OTHER: "other"
 }
 
+const Auditerium = {
+    SCREEN1:120,
+    SCREEN2:100,
+    SCREEN3:80,
+}
+
 module.exports = {
     Status,
     USER_ROLES,
-    GENDER
+    GENDER,
+    Auditerium
 }

@@ -86,7 +86,30 @@ class BookingController {
       next(exception);
     }
   }
-}
+
+  async getBookingDetails(req, res, next) {
+    try {
+      const bookingId = req.params.bookingId;
+      const booking = await bookingSvc.getBookingById(bookingId);
+
+      if (!booking) {
+        return res.status(404).json({
+          data: null,
+          message: "Booking not found",
+          status: "BOOKING_NOT_FOUND",
+          options: null,
+        });
+      }
+      res.json({
+        data: booking,
+        message: "Booking details fetched successfully",
+        status: "BOOKING_DETAILS_FETCHED",
+      });
+      
+    } catch (exception) {
+      throw exception;
+    }
+}}
 
 const bookingCtrl = new BookingController();
 module.exports = bookingCtrl;

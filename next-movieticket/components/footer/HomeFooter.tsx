@@ -70,26 +70,7 @@ export default function HomeFooter() {
             />
           </div>
         </div>
-
-        <div>
-          <h3 className="text-orange-500 font-semibold mb-3">LOCATIONS</h3>
-
-          <p className="text-sm font-semibold mb-2">INSIDE VALLEY</p>
-          <ul className="space-y-1 text-sm">
-            <li>NB Center - New Baneshwor</li>
-            <li>Lotse Mall - Gongabu Bus Park</li>
-            <li>Bishwojyoti Mall - Jamal</li>
-          </ul>
-
-          <p className="text-sm font-semibold mt-4 mb-2">OUTSIDE VALLEY</p>
-          <ul className="space-y-1 text-sm">
-            <li>Butwal City Center - Butwal</li>
-            <li>Simara Business Center - Simara</li>
-            <li>Devchuli Multiplex - Nawalparasi</li>
-          </ul>
-        </div>
       </div>
-
       <div className="text-center text-sm py-4 border-t">
         © {new Date().getFullYear()} CineTix | All rights reserved
       </div>

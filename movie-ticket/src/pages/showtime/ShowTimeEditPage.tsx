@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Spin } from "antd";
 import showtimeService from "../../services/showtime.service";
-import ShowTimeForm from "../../components/ShowTimeForm";
+import ShowTimeForm from "../../components/showtime/ShowTimeForm";
 
 
 // ShowTime DTO Type

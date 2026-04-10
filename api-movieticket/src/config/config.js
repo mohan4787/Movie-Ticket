@@ -5,6 +5,7 @@ const AppConfig = {
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
     frontendUrl: process.env.FRONTEND_URL,
+    nextjsUrl: process.env.NEXTJS_URL,
     jwtSecret: process.env.JWT_SECRET
 }
 
@@ -22,8 +23,16 @@ const DbConfig = {
   mongoDBName: process.env.MONGODB_DBNAME,
 }
 
+const PaymentConfig = {
+  khalti:{
+    url:process.env.KHALTI_PAYMENT_URL,
+    secretKey:process.env.KHALTI_SECRET_KEY
+  }
+}
+
 module.exports = {
     AppConfig,
     SMTPConfig,
-    DbConfig
+    DbConfig,
+    PaymentConfig
 }

@@ -9,6 +9,8 @@ const {
 
 const showtimeRouter = require("express").Router();
 
+
+
 showtimeRouter
   .route("/")
   .post(
@@ -17,6 +19,7 @@ showtimeRouter
     showtimeCtrl.createShowTime,
   )
   .get(showtimeCtrl.listAllShowTimes);
+
 
 showtimeRouter
   .route("/:movieId")
@@ -29,6 +32,17 @@ showtimeRouter
   .delete(auth([USER_ROLES.ADMIN]), showtimeCtrl.deleteShowTimeById);
 
 showtimeRouter.route("/movie/:movieId").get(showtimeCtrl.getShowTimesByMovie);
+showtimeRouter.route("/getshowtime/:showtimeId").get(showtimeCtrl.getShowTimesByShowTimeId);
 showtimeRouter.route("/date/:date").get(showtimeCtrl.getShowTimesByDate);
+
+
+// showtimeRouter.post("/",bodyValidator(ShowTimeCreateDTO), showtimeCtrl.createShowTime);
+// showtimeRouter.get("/", showtimeCtrl.listAllShowTimes);
+// showtimeRouter.get("/movie/:movieId", showtimeCtrl.getAllShowTimeByMovieId);
+// showtimeRouter.get("/:showtimeId", showtimeCtrl.getShowTimeById);
+// showtimeRouter.put("/:showtimeId",  bodyValidator(ShowTimeUpdateDTO), showtimeCtrl.updateShowTimeById);
+// showtimeRouter.delete("/:showtimeId", showtimeCtrl.deleteShowTimeById);
+// showtimeRouter.get("/movie/:movieId", showtimeCtrl.getShowTimesByMovie);
+// showtimeRouter.get("/date/:date", showtimeCtrl.getShowTimesByDate);
 
 module.exports = showtimeRouter;

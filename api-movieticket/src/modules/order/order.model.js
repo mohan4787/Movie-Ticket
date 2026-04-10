@@ -22,6 +22,10 @@ const OrderSchema = new mongoose.Schema(
       enum: ["created", "confirmed", "cancelled"],
       default: "created",
     },
+    pidx: {
+      type: String,
+      default: null,
+    },
     transactionId: String,
     paymentMethod: { type: String, enum: ["khalti", "esewa", "card"] },
   },

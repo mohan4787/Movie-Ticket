@@ -2,73 +2,84 @@ const BaseService = require("../../services/base.service");
 const Booking = require("./booking.model");
 const { getIO } = require("../../utilities/socket");
 const ticketService = require("../ticket/ticket.service");
+const ShowTimeModel = require("../showtime/showtime.model");
 
 class BookingService extends BaseService {
   constructor() {
     super(Booking);
   }
 
-  async holdSeats(data) {
-    const { movieId, showtimeId, seats, userId, totalAmount } = data;
+// Inside your Booking Service or Controller
+async holdSeats(data) {
+  const { movieId, showtimeId, seats, userId, totalAmount } = data;
 
-    if (
-      !movieId ||
-      !showtimeId ||
-      !userId ||
-      !Array.isArray(seats) ||
-      seats.length === 0
-    ) {
-      throw new Error("Invalid input");
-    }
-
-    if (!totalAmount || totalAmount <= 0) {
-      throw new Error("Invalid totalAmount");
-    }
-
-    const seatNumbers = seats.map((s) => s.seatNumber);
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + 5 * 60 * 1000);
-
-    const conflict = await this.exists({
-      showtimeId,
-      "seats.seatNumber": { $in: seatNumbers },
-      $or: [
-        { bookingStatus: "confirmed" },
-        {
-          bookingStatus: "reserved",
-          expiresAt: { $gt: now },
-        },
-      ],
-    });
-
-    if (conflict) {
-      throw new Error("Some seats are already reserved or booked");
-    }
-
-    const booking = await this.create({
-      userId,
-      movieId,
-      showtimeId,
-      totalAmount,
-      seats: seats.map((s) => ({
-        seatNumber: s.seatNumber,
-        status: "reserved",
-      })),
-      createdBy: userId,
-      bookingStatus: "reserved",
-      expiresAt,
-    });
-
-    const io = getIO();
-    if (io) {
-      io.to(showtimeId.toString()).emit("seat_locked", {
-        seats: seatNumbers,
-      });
-    }
-
-    return booking;
+  // 1. Validation
+  if (!movieId || !showtimeId || !userId || !Array.isArray(seats) || seats.length === 0) {
+    throw new Error("Invalid input data");
   }
 
+  const seatNumbers = seats.map((s) => s.seatNumber);
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 5 * 60 * 1000); // 5 minutes expiry
+
+  // 2. Conflict Check (Ensure no one else has booked/reserved these in the meantime)
+  const conflict = await this.model.findOne({
+    showtimeId,
+    "seats.seatNumber": { $in: seatNumbers },
+    $or: [
+      { bookingStatus: "confirmed" },
+      {
+        bookingStatus: "reserved",
+        expiresAt: { $gt: now },
+      },
+    ],
+  });
+
+  if (conflict) {
+    throw new Error("Some seats are already reserved or booked by another user");
+  }
+
+  // 3. Create the Booking entry
+  const booking = await this.model.create({
+    userId,
+    movieId,
+    showtimeId,
+    totalAmount,
+    seats: seats.map((s) => ({
+      seatNumber: s.seatNumber,
+      status: "reserved",
+    })),
+    createdBy: userId,
+    bookingStatus: "reserved",
+    expiresAt,
+  });
+
+  // 4. THE FIX: Update the Showtime document's seat statuses
+  // This ensures the map reflects the reservation immediately
+  await ShowTimeModel.updateOne(
+    { 
+      _id: showtimeId, 
+      "seats.seatNumber": { $in: seatNumbers } 
+    },
+    { 
+      $set: { "seats.$[elem].status": "reserved" } 
+    },
+    { 
+      arrayFilters: [{ "elem.seatNumber": { $in: seatNumbers } }] 
+    }
+  );
+
+  // 5. Real-time update via Socket.io
+  const io = getIO();
+  if (io) {
+    io.to(showtimeId.toString()).emit("seat_locked", {
+      seats: seatNumbers,
+      status: "reserved"
+    });
+  }
+
+  return booking;
+}
   async confirmBooking(bookingId, userId) {
     const booking = await this.findById(bookingId);
 

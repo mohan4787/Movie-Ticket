@@ -17,7 +17,52 @@ const deleteFile = (filePath) => {
   }
 };
 
+const generateSeat = (screen) =>  {
+  let seats = [];
+
+  if (screen === "SCREEN1") {
+    const rows = ["A", "B", "C"];
+    const cols = 40;
+    rows.forEach((row) => {
+      for (let i = 1; i <= cols; i++) {
+        seats.push({
+          seatNumber: `${row}${i.toString().padStart(2, "0")}`,
+          isBooked: false,
+        });
+      }
+    });
+
+  } else if (screen === "SCREEN2") {
+    const rows = ["A", "B", "C"];
+    const cols = 40;
+    rows.forEach((row) => {
+      for (let i = 1; i <= cols; i++) {
+        seats.push({
+          seatNumber: `${row}${i.toString().padStart(2, "0")}`,
+          isBooked: false,
+        });
+      }
+    });
+
+  } else if (screen === "SCREEN3") {
+    const rows = ["A", "B", "C"];
+    const cols = 40;
+    rows.forEach((row) => {
+      for (let i = 1; i <= cols; i++) {
+        seats.push({
+          seatNumber: `${row}${i.toString().padStart(2, "0")}`,
+          isBooked: false,
+        });
+      }
+    });
+  }
+
+  return seats;
+}
+
+
 module.exports = {
   randomStringGenerator,
   deleteFile,
+  generateSeat
 };

@@ -1,7 +1,7 @@
-import LoginForm from "@/components/Form/LoginForm";
+import RegisterForm from "@/components/Form/RegisterForm";
 import background from "@/public/background.jpeg";
 
-const LoginPage = () => {
+const RegisterPage = () => {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
@@ -40,7 +40,7 @@ const LoginPage = () => {
         </div>
          <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-md bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl text-white">
-          <LoginForm />
+          <RegisterForm/>
         </div>
       </div>
       </div>
@@ -48,4 +48,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

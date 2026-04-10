@@ -13,11 +13,14 @@ class BaseService {
   }
 
   async getSingleRowByFilter(filter) {
+    
     try {
       const data = await this.model.findOne(filter);
       // Uncomment if you want to populate createdBy/updatedBy
       // .populate("createdBy", ['_id', 'title', "email", "image", "role", "status"])
       // .populate("updatedBy", ['_id', 'title', "email", "image", "role", "status"])
+      
+      
       return data;
     } catch (exception) {
       throw exception;

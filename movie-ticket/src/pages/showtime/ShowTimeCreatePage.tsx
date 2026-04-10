@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import * as Yup from "yup";
 import showtimeService from "../../services/showtime.service";
-import ShowTimeForm from "../../components/ShowTimeForm";
+import ShowTimeForm from "../../components/showtime/ShowTimeForm";
 import {  useParams } from "react-router";
 
 export interface IShowTimeCreateData {

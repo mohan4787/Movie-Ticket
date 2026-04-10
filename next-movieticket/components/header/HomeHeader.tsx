@@ -6,7 +6,7 @@ const HomeHeader = () => {
   return (
     <header>
       <nav className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 shadow-md">
-        <div className="flex flex-wrap justify-between items-center mx-auto max-w-7xl">
+        <div className="flex flex-wrap stick justify-between items-center mx-auto max-w-7xl">
           <Link href="/" className="flex items-center space-x">
             <Image
               src={logo}
@@ -73,10 +73,10 @@ const HomeHeader = () => {
 
               <li>
                 <Link
-                  href="/contact"
+                  href="/about-us"
                   className="text-gray-700 hover:text-red-600"
                 >
-                  Contact
+                  About Us
                 </Link>
               </li>
             </ul>

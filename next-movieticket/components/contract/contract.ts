@@ -1,7 +1,7 @@
 import * as Yup from "yup";
-import type { Gender, UserRoles } from "../../config/constants";
+import type { Gender, UserRoles } from "../../config/constants.config";
 
-import { UserRoles as UserRolesValue } from "../../config/constants";
+import { UserRoles as UserRolesValue } from "../../config/constants.config";
 
 export interface ICredentials {
   email: string;

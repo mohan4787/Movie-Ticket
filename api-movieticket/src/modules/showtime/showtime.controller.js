@@ -1,10 +1,16 @@
+const { generateSeat } = require("../../utilities/helper");
 const ShowTimeModel = require("./showtime.model");
 const showtimeSvc = require("./showtime.service");
 
 class ShowTimeController {
+
   async createShowTime(req, res, next) {
     try {
-      const payload = await showtimeSvc.transformShowTimeCreateData(req);
+      let payload = await showtimeSvc.transformShowTimeCreateData(req);
+
+      // ✅ Generate seats here
+      payload.seats = generateSeat(payload.screen);
+
       const showtime = await showtimeSvc.create(payload);
 
       res.json({
@@ -13,6 +19,7 @@ class ShowTimeController {
         status: "SHOWTIME_CREATED",
         options: null,
       });
+
     } catch (exception) {
       next(exception);
     }
@@ -21,15 +28,9 @@ class ShowTimeController {
   async listAllShowTimes(req, res, next) {
     try {
       let filter = {};
-      if (req.query.movie) {
-        filter.movie = req.query.movie;
-      }
-      if (req.query.date) {
-        filter.date = new Date(req.query.date);
-      }
-      if (req.query.status) {
-        filter.status = req.query.status;
-      }
+      if (req.query.movie) filter.movie = req.query.movie;
+      if (req.query.date) filter.date = new Date(req.query.date);
+      if (req.query.status) filter.status = req.query.status;
 
       const { data, pagination } = await showtimeSvc.listAllRowsByFilter(
         req.query,
@@ -47,11 +48,15 @@ class ShowTimeController {
     }
   }
 
-  async getShowTimeById(req, res) {
+  async getShowTimeById(req, res, next) {
+    console.log("i am here");
+    
     try {
-      const showtime = await showtimeSvc.getSingleRowByFilter({
-        _id: req.params.showtimeId,
-      });
+      // console.log("here we go:",data);
+      const showtime = await ShowTimeModel.findById(req.params.showtimeId);
+console.log(showtime);
+
+
 
       if (!showtime) {
         return res.status(404).json({
@@ -69,7 +74,7 @@ class ShowTimeController {
         options: null,
       });
     } catch (exception) {
-     throw(exception)
+      next(exception);
     }
   }
 
@@ -79,10 +84,24 @@ class ShowTimeController {
         _id: req.params.showtimeId,
       });
 
-      const payload = await showtimeSvc.transformUpdateShowTimeData(
+      if (!oldShowTime) {
+        return res.status(404).json({
+          data: null,
+          message: "ShowTime not found",
+          status: "SHOWTIME_NOT_FOUND",
+          options: null,
+        });
+      }
+
+      let payload = await showtimeSvc.transformUpdateShowTimeData(
         req,
         oldShowTime
       );
+
+      // ⚠️ Optional: regenerate seats ONLY if screen changes
+      if (payload.screen && payload.screen !== oldShowTime.screen) {
+        payload.seats = this.generateSeats(payload.screen);
+      }
 
       const update = await showtimeSvc.updateSingleRowByFilter(
         { _id: req.params.showtimeId },
@@ -135,9 +154,35 @@ class ShowTimeController {
     }
   }
 
+  async getShowTimesByShowTimeId(req, res, next) {
+  try {
+     const showtimeId = req.params.showtimeId;
+
+      const showtime = await showtimeSvc.getSingleRowByFilter({
+        _id: showtimeId,
+        status: "active",
+      });
+      if(!showtime) {
+        throw{
+          status: 404,
+          message: "ShowTime not found"
+        }
+      }
+      res.json({
+        data: showtime,
+        message: "ShowTime fetched successfully",
+        status: "SHOWTIME_FETCHED",
+        options: null,
+      })
+  } catch (exception) {
+    throw exception;
+  }
+  }
+
   async getShowTimesByDate(req, res, next) {
     try {
       const date = new Date(req.params.date);
+
       const showtimes = await showtimeSvc.listAllRowsByFilter({
         date: date,
         status: "active",
@@ -154,28 +199,30 @@ class ShowTimeController {
     }
   }
 
- async getAllShowTimeByMovieId(req, res, next) {
+  async getAllShowTimeByMovieId(req, res, next) {
     try {
-        const movieId = req.params.movieId;
-        const getAllShowTime = await ShowTimeModel.find({ movieId: movieId });
+      const movieId = req.params.movieId;
+      console.log("i am bre");
+      
 
-        // The Frontend EXPECTS 'options.pagination'
-        res.json({
-            data: getAllShowTime,
-            message: "Fetched all data successfully!!",
-            status: "SHOWTIME_LIST_FETCHED",
-            options: {
-                pagination: {
-                    current: 1,
-                    limit: getAllShowTime.length,
-                    total: getAllShowTime.length
-                }
-            }
-        });
+      const getAllShowTime = await ShowTimeModel.find({ movieId: movieId });
+
+      res.json({
+        data: getAllShowTime,
+        message: "Fetched all data successfully!!",
+        status: "SHOWTIME_LIST_FETCHED",
+        options: {
+          pagination: {
+            current: 1,
+            limit: getAllShowTime.length,
+            total: getAllShowTime.length,
+          },
+        },
+      });
     } catch (exception) {
-        next(exception);
+      next(exception);
     }
-}
+  }
 }
 
 const showtimeCtrl = new ShowTimeController();

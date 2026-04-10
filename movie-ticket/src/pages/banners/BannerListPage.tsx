@@ -127,7 +127,6 @@ const BannerListPage = () => {
         total: +response.options.pagination.total,
       });
     } catch {
-      //console.error(exception);
       toast.error("Banner cannot be fetched", {
         description: "Banner cannot be fetched at this moment!!!",
       });
@@ -147,22 +146,23 @@ const BannerListPage = () => {
     await getBannerList({ page: page, limit: pageSize });
   };
 
-  const ondeleteConfirm = async (bannerId: string) => {
-    setLoading(true)
+   const ondeleteConfirm = async (bannerId: string) => {
+    setLoading(true);
     try {
-      await bannerService.deleteRequest('/banner/'+bannerId)
-      toast.success("Banner deleted successfully!!!",{
-        description: "Banner deleted successfully from the content"
-      })
-      await getBannerList({page: PaginationDefault.page, limit: PaginationDefault.limit})
-    } catch(error: any)  {
-      toast.error("Banner canot be deleted!!!",{
-        description: "Banner cannot be deleted due to some error..."
-      })
+      await bannerService.deleteRequest(`/banner/${bannerId}`);
+      toast.success("Banner deleted successfully!", {
+        description: "Banner has been removed.",
+      });
+      await getBannerList({ page: pagination.current, limit: pagination.pageSize, search });
+    } catch (error: any) {
+      toast.error("Banner cannot be deleted!", {
+        description: error?.response?.data?.message || "Unknown error occurred.",
+      });
     } finally {
-        setLoading(false)
-      }
-  }
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       getBannerList({

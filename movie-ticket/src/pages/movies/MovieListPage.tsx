@@ -68,12 +68,10 @@ const MovieListPage = () => {
     });
   }, []);
 
-  // ✅ Pagination change
   const onPaginationChange = async (page: number, pageSize: number) => {
     await getMovieList({ page, limit: pageSize, search });
   };
 
-  // ✅ Delete movie
   const onDeleteConfirm = async (movieId: string) => {
     setLoading(true);
     try {
