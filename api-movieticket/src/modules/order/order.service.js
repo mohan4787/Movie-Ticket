@@ -4,6 +4,8 @@ const ShowTimeModel = require("../showtime/showtime.model");
 const { default: axios } = require("axios");
 const { PaymentConfig, AppConfig } = require("../../config/config");
 const mongoose = require("mongoose");
+const BookingModel = require("../booking/booking.model");
+const orderModel = require("./order.model");
 
 class OrderService {
   async createOrder(payload) {
@@ -76,11 +78,14 @@ class OrderService {
     // 1️⃣ Find the order
     const order = await Order.findOne({ pidx });
     if (!order) throw new Error("Order not found");
-
+    const BookingDetail = await BookingModel.findById(order.bookingId).populate("userId", "name email").populate("movieId", "title");
+    // console.log(orderDetails);
+    
     // 2️⃣ Already paid
     if (order.paymentStatus === "paid") return {
+      data: BookingDetail,
       message:"Payment already verified for this order",
-      paymentStatus: order.paymentStatus,
+      status: "ALREADY_VERIFIED",
     };
 
     // 3️⃣ Verify with Khalti
@@ -126,15 +131,17 @@ class OrderService {
       { arrayFilters: [{ "elem.seatNumber": { $in: booking.seats.map(s => s.seatNumber) } }] }
     );
 
-
+const bookingDetail = await BookingModel.findById({
+  _id: booking._id,
+}).populate("movieId", "title")
 
     // 8️⃣ Return result
     return {
       orderId: order._id,
-      bookingId: booking._id,
+      booking:bookingDetail,
       paymentStatus: order.paymentStatus,
     };
-  }
+  } 
 
 
   async getOrdersByUser(userId) {

@@ -39,4 +39,6 @@ bookingRouter.post(
   auth([USER_ROLES.ADMIN]),
   bookingCtrl.autoReleaseExpired,
 );
+
+bookingRouter.get("/allbookings/:userId", bookingCtrl.getAllBookingsForUser);
 module.exports = bookingRouter;

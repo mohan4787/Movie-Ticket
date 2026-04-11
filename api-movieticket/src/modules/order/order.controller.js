@@ -1,3 +1,4 @@
+const orderModel = require("./order.model");
 const orderService = require("./order.service");
 
 class OrderController {
@@ -60,6 +61,21 @@ class OrderController {
       next(err);
     }
   }
+
+  async getAllOrders(req, res, next) 
+    {
+try {
+   const getAllOrders = await orderModel.find();
+   res.status(200).json({
+        data: getAllOrders,
+        message: "All orders fetched successfully",
+        status: "ORDERS_FETCHED",
+      });
+
+} catch (exception) {
+  throw exception;
+}
+    }
 }
 
 module.exports = new OrderController();

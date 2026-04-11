@@ -24,6 +24,10 @@ import ScannerPage from "../pages/tickets/ScannerPage";
 import BookingListPage from "../pages/booking/BookingListPage";
 import BookingDetailPage from "../pages/booking/BookingDetailsPage";
 import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
+import UserList from "../pages/users/UserListPage";
+import AdminBookingPage from "../pages/booking/BookingListPage";
+import BookingList from "../pages/booking/BookingListPage";
+import BookingDetail from "../pages/booking/BookingDetailsPage";
 // import BookingListPage from "../pages/booking/BookingListPage";
 // import BookingPage from "../pages/booking/BookingListPage";
 
@@ -56,6 +60,7 @@ const routerConfig = createBrowserRouter([
     children: [
       { index: true, Component: AdminDashboard },
       { path: "banner", Component: BannerListPage },
+      { path: "users", Component: UserList },
       { path: "banner/create", Component: BannerCreatePage },
       { path: "banner/:id", Component: BannerEditPage },
       { path: "movie", Component: MovieListPage },
@@ -68,8 +73,8 @@ const routerConfig = createBrowserRouter([
       { path: "showtime/:id", Component: ShowTimeListPage },
        { path: "showtime/edit/:id", Component: ShowTimeEditPage},
 
-      { path: "booking", Component: BookingListPage },
-      { path: "booking-detail/:id", Component: BookingDetailPage },
+      { path: "booking", Component: BookingList },
+      { path: "booking-detail/:_id", Component: BookingDetail },
       { path: "tickets", Component: TicketPage },
       { path: "tickets/scanner", Component: ScannerPage },
       { path: "*", Component: ErrorNotFound },

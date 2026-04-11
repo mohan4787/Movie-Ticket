@@ -59,9 +59,9 @@ export default function MovieCheckoutPage({ params }: any) {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ` + localStorage.getItem("_at_movieticket"),
-            //   "Content-Type": "application/json",
-            //   "Authorization": `Bearer rQZhtundefinedEE1undefinedkIXgABnvUzhQeEFHsS8E1Xg1ThISJ5Z5rMHgBEUJadPklymMehj6eH7T9TJTDbNITPnqSVmprhgItYundefinedYFVC5fWQBi2gDBQt2XNbfO7OQM6koJEG9aVjcYCRiO6dUbdRGIgjQN7lY725Z`,
+            "Authorization": `Bearer ` + localStorage.getItem("_at_movieticket"),
+              // "Content-Type": "application/json",
+              // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV`,
           },
         },
       );
@@ -76,8 +76,9 @@ export default function MovieCheckoutPage({ params }: any) {
         `/order/initiate-payment/${orderId}`,
         {
           headers: {
-            // "Content-Type": "application/json",
-            Authorization: `Bearer ` + localStorage.getItem("_at_movieticket"),
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ` + localStorage.getItem("_at_movieticket"),
+            // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV `,
           },
         },
       );

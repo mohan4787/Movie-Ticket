@@ -119,7 +119,8 @@ export default function MovieBookingSystem() {
       const res = await authSvc.postRequest("/booking", payload,{
         headers: {
          "Content-Type": "application/json",
-              "Authorization": `Bearer `+ localStorage.getItem("_at_movieticket"), 
+             "Authorization": `Bearer `+ localStorage.getItem("_at_movieticket"), 
+            // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV `
         },
       });
       
@@ -182,7 +183,7 @@ export default function MovieBookingSystem() {
               </div>
 
               <div className="relative mb-20 text-center">
-                <div className="w-4/5 h-1.5 bg-gradient-to-r from-transparent via-slate-800 to-transparent mx-auto rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.2)]" />
+                <div className="w-4/5 h-1.5 `bg-gradient-to-r` from-transparent via-slate-800 to-transparent mx-auto rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.2)]" />
                 <p className="mt-6 text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 flex items-center justify-center gap-2">
                   <Monitor className="w-3 h-3" /> Screen
                 </p>
@@ -268,7 +269,7 @@ export default function MovieBookingSystem() {
               )}
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-100 rounded-[2rem] p-6 flex items-start gap-4">
+            <div className="bg-indigo-50 border border-indigo-100 rounded-4xl p-6 flex items-start gap-4">
               <div className="p-3 bg-white rounded-2xl shadow-sm text-indigo-600 shrink-0">
                 <Info className="w-5 h-5" />
               </div>

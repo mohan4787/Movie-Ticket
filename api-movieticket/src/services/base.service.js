@@ -73,7 +73,8 @@ class BaseService {
     try {
       const { limit = 10, skip = 0, sort = { createdAt: -1 } } = options;
 
-      const data = await this.model.find(filter).sort(sort).skip(skip).limit(limit);
+      const data = await this.model.find(filter).populate("userId", "name email").populate("movieId", "title").sort(sort).skip(skip).limit(limit);
+
       const total = await this.model.countDocuments(filter);
 
       return {
@@ -89,6 +90,7 @@ class BaseService {
       throw exception;
     }
   }
+  
 
 
   async count(filter = {}) {

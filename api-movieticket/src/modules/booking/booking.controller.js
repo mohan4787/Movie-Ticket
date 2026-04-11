@@ -19,7 +19,10 @@ class BookingController {
 
   async confirmBooking(req, res, next) {
     try {
-      const booking = await bookingSvc.confirmBooking(req.body.bookingId, req.userId);
+      const booking = await bookingSvc.confirmBooking(
+        req.body.bookingId,
+        req.userId,
+      );
 
       res.json({
         data: booking,
@@ -34,7 +37,10 @@ class BookingController {
 
   async cancelBooking(req, res, next) {
     try {
-      const booking = await bookingSvc.releaseSeats(req.body.bookingId, req.userId);
+      const booking = await bookingSvc.releaseSeats(
+        req.body.bookingId,
+        req.userId,
+      );
 
       res.json({
         data: booking,
@@ -51,6 +57,7 @@ class BookingController {
     try {
       let filter = {};
 
+      // 1. Handle existing filters
       if (req.query.userId) {
         filter.createdBy = req.query.userId;
       }
@@ -59,10 +66,22 @@ class BookingController {
         filter.bookingStatus = req.query.status;
       }
 
-      const bookings = await bookingSvc.getMultipleRowsByFilter(filter);
+      // 2. Extract Pagination Params
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      // 3. Calculate Skip (Crucial for data to actually change)
+      const skip = (page - 1) * limit;
+
+      // 4. Pass options to the service
+      const bookings = await bookingSvc.getMultipleRowsByFilter(filter, {
+        limit: limit,
+        skip: skip,
+        sort: { createdAt: -1 }, // Optional: keeps newest bookings at the top
+      });
 
       res.json({
-        data: bookings,
+        data: bookings, // bookings now contains { data, pagination }
         message: "Booking list fetched successfully",
         status: "BOOKING_LIST_FETCHED",
         options: null,
@@ -87,6 +106,31 @@ class BookingController {
     }
   }
 
+  async getAllBookingsForUser(req, res, next) {
+    try {
+      const userId = req.params.userId;
+      const AllBookings = await BookingModel.find({ userId })
+        .populate("movieId", "title")
+        .lean();
+      if (!AllBookings || AllBookings.length === 0) {
+        return res.status(404).json({
+          data: null,
+          message: "No bookings found for this user",
+          status: "USER_BOOKINGS_NOT_FOUND",
+          options: null,
+        });
+      }
+      res.json({
+        data: AllBookings,
+        message: "All bookings for user fetched successfully",
+        status: "USER_BOOKINGS_FETCHED",
+        options: null,
+      });
+    } catch (exception) {
+      throw exception;
+    }
+  }
+
   async getBookingDetails(req, res, next) {
     try {
       const bookingId = req.params.bookingId;
@@ -105,11 +149,11 @@ class BookingController {
         message: "Booking details fetched successfully",
         status: "BOOKING_DETAILS_FETCHED",
       });
-      
     } catch (exception) {
       throw exception;
     }
-}}
+  }
+}
 
 const bookingCtrl = new BookingController();
 module.exports = bookingCtrl;

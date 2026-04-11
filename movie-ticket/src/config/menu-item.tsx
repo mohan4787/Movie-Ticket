@@ -66,7 +66,7 @@ export const AdminMenu = [
   {
     key: "11",
     icon: <LogoutOutlined />,
-    label: <NavLink to="/logout">Logout</NavLink>,
+    label: <NavLink to="/">Logout</NavLink>,
   },
 ];
 

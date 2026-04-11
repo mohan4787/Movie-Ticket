@@ -1,6 +1,7 @@
 const { AppConfig } = require("../../config/config");
 const { Status } = require("../../config/constants");
 const { randomStringGenerator } = require("../../utilities/helper");
+const UserModel = require("../user/user.model");
 const userSvc = require("../user/user.service");
 const authSvc = require("./auth.service");
 const bcrypt = require("bcryptjs")
@@ -288,6 +289,27 @@ class AuthController {
       next(exception);
     }
   };
+getAllUsers= async (req,res,next)=>{
+  try {
+    const getAllUserDetail = await UserModel.find({role:"customer"}).select("-password -activationToken -forgetPasswordToken -expiryTime").lean();
+    if(!getAllUserDetail){
+      throw({
+        code:404,
+        message:"No user found!",
+        status:"NOT_FOUND"
+      })
+    }
+    res.json({
+      data: getAllUserDetail,
+      message: "User list fetched successfully",
+      status: "SUCCESS",
+      options: null
+    })
+  } catch (exception) {
+    throw exception
+  }
+}
+
   loggedInUserProfile = (req, res, next) => {
     res.json({
       data: req.loggedInUser,

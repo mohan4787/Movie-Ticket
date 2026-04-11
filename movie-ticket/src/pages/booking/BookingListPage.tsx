@@ -1,171 +1,186 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import { Table, Tag, Button, Card, Typography, message, Space } from 'antd';
+import { EyeOutlined, CalendarOutlined, UserOutlined, IeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
+import dayjs from 'dayjs';
+import authSvc from '../../services/auth.service';
 
-import { Ticket, CheckCircle2, Calendar, Armchair, Loader2, AlertCircle } from 'lucide-react';
-import bookingService from '../../services/booking.service';
-import { useEffect, useState } from 'react';
+const { Title, Text } = Typography;
 
-interface Seat {
-  seatNumber: string;
-  status: string;
+// --- Interfaces ---
+interface IUser {
   _id: string;
+  name: string;
+  email: string;
 }
 
-interface Booking {
+interface IMovie {
   _id: string;
-  userId:string;
-  movieId: string;
-  showtimeId: string;
-  seats: Seat[];
-  paymentStatus: string;
-  bookingStatus: string;
+  title: string;
+}
+
+interface ISeat {
+  _id: string;
+  seatNumber: string;
+}
+
+interface IBooking {
+  _id: string;
+  userId: IUser;
+  movieId: IMovie;
+  seats: ISeat[];
+  totalAmount: number;
+  bookingStatus: 'confirmed' | 'reserved' | 'cancelled';
   createdAt: string;
 }
 
-// interface APIResponse {
-//   data: {
-//     data: Booking[];
-//     pagination: {
-//       total: number;
-//       limit: number;
-//       skip: number;
-//       pages: number;
-//     };
-//   };
-//   message: string;
-//   status: string;
-// }
+const BookingList: React.FC = () => {
+  const [bookings, setBookings] = useState<IBooking[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [total, setTotal] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
-const BookingListPage = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        // Replace this URL with your actual backend endpoint
-        const response = await bookingService.getRequest("/booking");
-        setBookings(response.data.data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch bookings. Please try again later.');
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
+  // Optimized Fetch function
+  const fetchBookings = useCallback(async (page: number, limit: number) => {
+    setLoading(true);
+    try {
+      // IMPORTANT: Passing template literals to getRequest
+      const response = await authSvc.getRequest(`booking?page=${page}&limit=${limit}`);
+
+      if (response.status === "BOOKING_LIST_FETCHED") {
+        // Ensure you are reaching the array in: response.data.data
+        const result = response.data?.data || [];
+        setBookings(result);
+        
+        // Map total from your backend pagination object
+        setTotal(response.data?.pagination?.total || 0);
       }
-    };
-
-    fetchBookings();
+    } catch (error) {
+      message.error("Failed to fetch bookings");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
-  
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
+  // Initial Load
+  useEffect(() => {
+    fetchBookings(currentPage, pageSize);
+  }, [fetchBookings, currentPage, pageSize]);
+
+  // Handle page/limit change
+  const handleTableChange = (pagination: any) => {
+    setCurrentPage(pagination.current);
+    setPageSize(pagination.pageSize);
+    // The useEffect will trigger fetchBookings automatically due to dependency array
   };
 
-  // --- Conditional Rendering for States ---
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
-        <span className="ml-3 text-gray-600 font-medium">Loading your bookings...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8 bg-white rounded-xl shadow-sm border border-red-100">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900">Oops!</h2>
-          <p className="text-gray-600 mt-2">{error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-          >
-            Retry
-          </button>
+  const columns = [
+    {
+      title: 'Movie Name',
+      dataIndex: 'movieId',
+      key: 'movieTitle',
+      render: (movie: IMovie) => (
+        <Text strong className="text-blue-700">{movie?.title || "N/A"}</Text>
+      ),
+    },
+    {
+      title: 'Customer',
+      dataIndex: 'userId',
+      key: 'customer',
+      render: (user: IUser) => (
+        <Space direction="vertical" size={0}>
+          <Text className="text-sm font-medium"><UserOutlined /> {user?.name || "Guest"}</Text>
+          <Text type="secondary" className="text-[11px]">{user?.email}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Seats',
+      dataIndex: 'seats',
+      key: 'seats',
+      render: (seats: ISeat[]) => (
+        <div className="flex flex-wrap gap-1">
+          {seats?.map((s) => (
+            <Tag key={s._id} color="cyan" icon={<IeOutlined />}>{s.seatNumber}</Tag>
+          ))}
         </div>
-      </div>
-    );
-  }
+      ),
+    },
+    {
+      title: 'Total',
+      dataIndex: 'totalAmount',
+      key: 'totalAmount',
+      render: (amount: number) => <Text strong>Rs. {amount}</Text>,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'bookingStatus',
+      key: 'bookingStatus',
+      render: (status: string) => {
+        const colors: Record<string, string> = { confirmed: 'green', reserved: 'orange', cancelled: 'red' };
+        return <Tag color={colors[status] || 'blue'} className="capitalize">{status}</Tag>;
+      },
+    },
+    {
+      title: 'Date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => (
+        <Text type="secondary" className="text-xs">
+          <CalendarOutlined /> {dayjs(date).format('MMM DD, HH:mm')}
+        </Text>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      fixed: 'right' as const,
+      width: 100,
+      render: (_: any, record: IBooking) => (
+        <Button 
+          type="primary" 
+          size="small" 
+          icon={<EyeOutlined />} 
+          onClick={() => navigate(`/admin/booking-detail/${record._id}`)}
+        >
+          Details
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Booking History</h1>
-          <div className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-            {bookings.length} Bookings Found
-          </div>
-        </header>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <Card className="shadow-md border-0 rounded-xl">
+        <div className="flex justify-between items-center mb-6">
+          <Title level={3}>Booking History</Title>
+          <Button onClick={() => fetchBookings(currentPage, pageSize)} loading={loading}>
+            Refresh
+          </Button>
+        </div>
 
-        {bookings.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
-            <Ticket className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">No bookings found in your account.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {bookings.map((booking) => (
-              <div key={booking._id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  
-                  {/* Left: Metadata */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
-                        #{booking._id.slice(-6).toUpperCase()}
-                      </span>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(booking.createdAt)}
-                      </div>
-                    </div>
-                    <h3 className="font-semibold text-gray-900">Movie ID: {booking.movieId}</h3>
-                  </div>
-
-                  {/* Middle: Seats */}
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-400 uppercase font-bold mb-2 flex items-center">
-                      <Armchair className="w-3 h-3 mr-1" /> Reserved Seats
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {booking.seats.map(s => (
-                        <span key={s._id} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-bold rounded">
-                          {s.seatNumber}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Right: Status */}
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <div className={`text-xs font-bold uppercase ${booking.paymentStatus === 'paid' ? 'text-green-600' : 'text-orange-500'}`}>
-                        {booking.paymentStatus}
-                      </div>
-                      <div className="flex items-center text-sm font-medium text-gray-700">
-                        <CheckCircle2 className="w-4 h-4 mr-1 text-green-500" />
-                        {booking.bookingStatus}
-                      </div>
-                    </div>
-                    <button className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-black transition">
-                       <a href={`/admin/booking-detail/${booking.userId}`}>Details</a>
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        <Table
+          columns={columns}
+          dataSource={bookings}
+          rowKey="_id"
+          loading={loading}
+          onChange={handleTableChange}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: total, // Set to 57 from backend
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} items`,
+          }}
+          scroll={{ x: 1000 }}
+        />
+      </Card>
     </div>
   );
 };
 
-export default BookingListPage;
+export default BookingList;

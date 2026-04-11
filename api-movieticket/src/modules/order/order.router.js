@@ -13,7 +13,7 @@ const {
 
 orderRouter.post(
   "/",
-  auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
+  // auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
   bodyValidator(OrderCreateDTO),
   orderCtrl.createOrder
 );
@@ -35,6 +35,12 @@ orderRouter.get(
   "/my-orders",
   auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
   orderCtrl.getMyOrders
+);
+
+orderRouter.get(
+  "/",
+  auth([USER_ROLES.ADMIN || USER_ROLES.USER || USER_ROLES.CUSTOMER]),
+  orderCtrl.getAllOrders
 );
 
 module.exports = orderRouter;

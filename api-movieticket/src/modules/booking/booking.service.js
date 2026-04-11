@@ -115,6 +115,7 @@ async holdSeats(data) {
     const booking = await this.model
       .findById(bookingId)
       .populate("movieId", "title")
+      .populate("userId", "name email")
       // .populate("showtimeId")
       .lean();
     if (!booking) throw new Error("Booking not found");

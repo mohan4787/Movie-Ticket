@@ -1,167 +1,209 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router";
-import { Input, Popconfirm, Table, Button } from "antd";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import userService from "../../services/user.service";
+"use client";
 
-export interface IUserData {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  phone?: string;
-  gender?: string;
-  image?: {
-    optimizedUrl?: string;
-  };
-}
+import React, { useEffect, useState } from "react";
+import { 
+  Table, Tag, Avatar, Button, message, Input, Card, 
+  Space, Tooltip, Breadcrumb, Badge, Typography 
+} from "antd";
+import { 
+  EditOutlined, 
+  DeleteOutlined, 
+  ReloadOutlined, 
+  PlusOutlined, 
+  UserOutlined,
+  SearchOutlined
+} from "@ant-design/icons";
+import authSvc from "../../services/auth.service";
 
-const UserListPage = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<IUserData[]>([]);
-  const [search, setSearch] = useState("");
+const { Title, Text } = Typography;
 
-  // ✅ Fetch users
-  const getUserList = async () => {
+const UserList = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await userService.getRequest("/user");
-      setData(response.data);
-    } catch {
-      toast.error("Users cannot be fetched");
+      const response = await authSvc.getRequest("auth/users");
+      if (response.status === "SUCCESS") {
+        setUsers(response.data);
+      }
+    } catch (error) {
+      message.error("Failed to load users");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUserList();
+    fetchUsers();
   }, []);
 
-  // ✅ Delete user
-  const onDeleteConfirm = async (id: string) => {
-    try {
-      await userService.deleteRequest(`/user/${id}`);
-
-      toast.success("User deleted successfully");
-
-      getUserList(); // refresh
-    } catch (error: any) {
-      toast.error(error?.message || "Delete failed");
-    }
-  };
-
-  // ✅ Filter (Search)
-  const filteredData = data.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // ✅ Table columns
-  const columns = [
+  const columns:any = [
     {
-      title: "Image",
-      dataIndex: "image",
-      render: (val: any) => (
-        <img
-          src={val?.optimizedUrl || "https://placehold.co/60"}
-          className="w-12 h-12 rounded-full object-cover"
+      title: 'User',
+      key: 'user_detail',
+      fixed: 'left',
+      width: 250,
+      render: (_: any, record: any) => (
+        <Space size="middle">
+          <Avatar 
+            src={record.image?.optimizedUrl} 
+            icon={<UserOutlined />}
+            size={44} 
+            className="border-2 border-indigo-50 shadow-sm"
+          />
+          <div className="flex flex-col">
+            <Text strong className="capitalize text-slate-800 leading-tight">
+              {record.name}
+            </Text>
+            <Text type="secondary" className="text-xs">
+              {record.email}
+            </Text>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: 'Phone Number',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (phone: string) => <Text className="text-slate-600 font-medium">{phone || 'N/A'}</Text>,
+    },
+    {
+      title: 'Access Level',
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => (
+        <Tag 
+          color={role === 'admin' ? 'volcano' : 'geekblue'} 
+          className="rounded-full px-3 py-0.5 border-none font-semibold uppercase text-[10px]"
+        >
+          {role}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Account Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => (
+        <Badge 
+          status={status === 'active' ? 'success' : 'warning'} 
+          text={<span className="capitalize font-medium text-slate-600">{status}</span>} 
         />
       ),
     },
     {
-      title: "Name",
-      dataIndex: "name",
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
+      render: (gender: string) => (
+        <span className="capitalize text-slate-500">{gender}</span>
+      )
     },
     {
-      title: "Email",
-      dataIndex: "email",
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (val: string) =>
-        val === "active" ? (
-          <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
-            Active
-          </span>
-        ) : (
-          <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-            Inactive
-          </span>
-        ),
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-    },
-
-    // ✅ Action column
-    {
-      title: "Action",
-      dataIndex: "_id",
-      render: (id: string) => (
-        <div className="flex gap-3">
-          <NavLink
-            to={`/admin/user/${id}`}
-            className="bg-teal-700 text-white p-2 rounded-full"
-          >
-            <EditOutlined />
-          </NavLink>
-
-          <Popconfirm
-            title="Are you sure?"
-            onConfirm={() => onDeleteConfirm(id)}
-          >
-            <Button className="bg-red-700 text-white p-2 rounded-full">
-              <DeleteOutlined />
-            </Button>
-          </Popconfirm>
-        </div>
+      title: 'Actions',
+      key: 'actions',
+      fixed: 'right',
+      width: 120,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Tooltip title="Edit User">
+            <Button 
+              type="text" 
+              shape="circle" 
+              icon={<EditOutlined className="text-indigo-600" />} 
+              className="hover:bg-indigo-50"
+            />
+          </Tooltip>
+          <Tooltip title="Delete User">
+            <Button 
+              type="text" 
+              shape="circle" 
+              danger 
+              icon={<DeleteOutlined />} 
+              className="hover:bg-red-50"
+            />
+          </Tooltip>
+        </Space>
       ),
     },
   ];
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Header */}
-      <div className="flex justify-between border-b pb-3">
-        <h1 className="text-3xl font-semibold">User Page</h1>
-
-        <div className="flex gap-5">
-          <Input.Search
-            placeholder="Search user..."
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <NavLink
-            to="/admin/users/create"
-            className="bg-teal-700 text-white px-4 py-2 rounded"
-          >
-            <PlusOutlined /> Add User
-          </NavLink>
+    <div className="p-6 md:p-10 bg-slate-50 min-h-screen">
+      {/* Header Section */}
+      <div className="mb-8">
+        <Breadcrumb className="mb-2">
+          <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
+          <Breadcrumb.Item>User Management</Breadcrumb.Item>
+        </Breadcrumb>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <Title level={2} className="m-0 text-slate-900 font-extrabold tracking-tight">
+              User Directory
+            </Title>
+            <Text type="secondary" className="text-base">
+              Manage {users.length} active members and system roles.
+            </Text>
+          </div>
+          <Space>
+            <Button 
+              icon={<ReloadOutlined />} 
+              onClick={fetchUsers}
+              loading={loading}
+              className="rounded-lg h-10 px-5 font-semibold"
+            >
+              Refresh
+            </Button>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              className="rounded-lg h-10 px-5 font-semibold bg-indigo-600 shadow-lg shadow-indigo-100"
+            >
+              Add New User
+            </Button>
+          </Space>
         </div>
       </div>
 
-      {/* Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="_id"
-        loading={loading}
-        pagination={{
-          pageSize: 5,
-        }}
-      />
+      {/* Main Content Card */}
+      <Card 
+        className="shadow-xl shadow-slate-200/50 border-0 rounded-2xl overflow-hidden"
+        bodyStyle={{ padding: '0' }}
+      >
+        {/* Filter Bar */}
+        <div className="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 bg-white">
+          <Input 
+            placeholder="Quick search members..." 
+            prefix={<SearchOutlined className="text-slate-400" />}
+            className="max-w-xs h-10 rounded-xl bg-slate-50 border-slate-200 hover:border-indigo-400"
+            allowClear
+          />
+          <div className="text-xs text-slate-400 font-medium">
+            Showing <span className="text-slate-900">{users.length}</span> results
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="_id"
+          loading={loading}
+          pagination={{ 
+            pageSize: 8, 
+            position: ['bottomRight'],
+            showSizeChanger: true,
+            className: "pr-5 py-4"
+          }}
+          className="ant-table-modern"
+          scroll={{ x: 1000 }}
+        />
+      </Card>
     </div>
   );
 };
 
-export default UserListPage;
+export default UserList;
