@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import authSvc from "@/services/auth.service";
 import { log } from "console";
+import { useAuth } from "@/context/auth.context";
 
 // --- Interfaces ---
 interface Seat {
@@ -32,6 +33,7 @@ interface Movie {
 }
 
 export default function MovieBookingSystem() {
+  const {loggedInUser} = useAuth();
   const { showtimeId } = useParams();
   const router = useRouter();
   
@@ -109,7 +111,7 @@ export default function MovieBookingSystem() {
     try {
       // Structure based on your provided Backend Requirement
       const payload = {
-        userId: "69abd85203e6c023c057ae8d", // Hardcoded per your example, or get from Auth context
+        userId: loggedInUser?._id, // Hardcoded per your example, or get from Auth context
         movieId: showtime.movieId,
         showtimeId: showtime._id,
         seats: selectedSeats.map((num) => ({ seatNumber: num })),
@@ -133,8 +135,14 @@ export default function MovieBookingSystem() {
       router.push(`/checkout/${bookingId}`);
 
     } catch (err: any) {
-      console.error("Booking error:", err);
-      toast.error(err.response?.data?.message || "Failed to reserve seats. Please try again.");
+      // console.error("Booking error:", err);
+      if(!loggedInUser)
+      {
+        toast.error("Please login first!")
+      }
+      else{
+        toast.error(err.response?.data?.message || "Failed to reserve seats. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }

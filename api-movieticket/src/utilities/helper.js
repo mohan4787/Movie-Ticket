@@ -16,6 +16,23 @@ const deleteFile = (filePath) => {
     fs.unlinkSync(filePath);
   }
 };
+const getDateRange = (query) => {
+    const { startDate, endDate } = query;
+
+    // Default: If no dates, show last 30 days
+    let start = startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30));
+    let end = endDate ? new Date(endDate) : new Date();
+
+    start.setHours(0, 0, 0, 0);       // Start of day
+    end.setHours(23, 59, 59, 999);    // End of day
+
+    return {
+        createdAt: {
+            $gte: start,
+            $lte: end,
+        },
+    };
+};
 
 const generateSeat = (screen) =>  {
   let seats = [];
@@ -64,5 +81,6 @@ const generateSeat = (screen) =>  {
 module.exports = {
   randomStringGenerator,
   deleteFile,
-  generateSeat
+  generateSeat,
+  getDateRange
 };

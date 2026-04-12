@@ -1,4 +1,4 @@
-import LoginForm from "@/components/Form/LoginForm";
+ import LoginForm from "@/components/Form/LoginForm";
 import background from "@/public/background.jpeg";
 
 const LoginPage = () => {

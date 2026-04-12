@@ -15,15 +15,17 @@ const AdminLayoutPage = () => {
 
   if (loggedInUser) {
     return (
-      <Layout className="h-screen">
+      <Layout className="h-screen overflow-hidden">
         <Sidebar collapsed={collapsed} menu={AdminMenu} />
-        <Layout>
+
+        <Layout className="flex flex-col h-full">
           <UserHeader collapsed={collapsed} setCollapsed={setCollapsed} />
           <Content
-            className="bg-gray-300  rounded-md"
+            className="bg-gray-300 rounded-md overflow-y-auto"
             style={{
               margin: "24px 16px",
               padding: 24,
+              flex: 1, 
             }}
           >
             <Outlet />

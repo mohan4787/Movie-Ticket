@@ -24,13 +24,14 @@ class ShowTimeService extends BaseService {
   publicShowTimeData = (row) => {
     return {
       _id: row._id,
-      movie: row.movie,
-      theater: row.theater,
+      movieId: row.movieId,
       screen: row.screen,
+      price: row.price,
       date: row.date,
       startTime: row.startTime,
       endTime: row.endTime,
       language: row.language,
+      seats: row.seats,
       status: row.status,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
@@ -45,7 +46,7 @@ class ShowTimeService extends BaseService {
 
       const data = await this.model
         .find(filter)
-        .populate("movie", ["_id", "title", "slug", "poster"])
+        .populate("movieId", ["_id", "title", "slug", "poster"])
         .sort({ date: 1, startTime: 1 })
         .skip(skip)
         .limit(limit);

@@ -6,8 +6,10 @@ import { Loader2, Ticket, Calendar, Clock, Inbox, ChevronRight, CheckCircle2, Ch
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import authSvc from "@/services/auth.service";
+import { useAuth } from "@/context/auth.context";
 
 export default function MyBookingsPage() {
+  const {loggedInUser}=useAuth();
   const router = useRouter();
   const params = useParams();
   const [bookings, setBookings] = useState<any[]>([]);
@@ -20,7 +22,7 @@ export default function MyBookingsPage() {
 
   const fetchBookings = useCallback(async () => {
     try {
-      const userId = "69abd85203e6c023c057ae8d";
+      const userId =loggedInUser?._id;
       const response = await authSvc.getRequest(`/booking/allbookings/${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("_at_movieticket")}`,
@@ -31,7 +33,6 @@ export default function MyBookingsPage() {
       const confirmedOnly = allData.filter((b: any) => b.bookingStatus === "confirmed");
       setBookings(confirmedOnly);
     } catch (error: any) {
-      console.error("Booking Fetch Error:", error);
       toast.error(error.response?.data?.message || "Failed to load bookings");
     } finally {
       setLoading(false);
@@ -179,7 +180,7 @@ function BookingTicket({ booking }: { booking: any }) {
       onClick={() => router.push(`/tickets/${booking._id}`)}
       className="group relative bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col lg:flex-row cursor-pointer"
     >
-      <div className="p-10 flex flex-col items-center justify-center relative min-w-[240px] bg-slate-900 group-hover:bg-black transition-colors">
+      <div className="p-10 flex flex-col items-center justify-center relative min-w-60 bg-slate-900 group-hover:bg-black transition-colors">
         <div className="p-3 rounded-2xl bg-white shadow-inner">
           <QRCodeSVG 
             value={JSON.stringify({ id: booking._id, movie: booking.movieId?.title })} 
@@ -188,7 +189,7 @@ function BookingTicket({ booking }: { booking: any }) {
           />
         </div>
         <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Valid Entry</p>
-        <div className="absolute -right-4 top-0 bottom-0 w-8 flex flex-col justify-around py-4 z-10 hidden lg:flex">
+        <div className="absolute -right-4 top-0 bottom-0 w-8 flex flex-col justify-around py-4 z-10  lg:flex">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="w-8 h-8 bg-[#F8FAFC] rounded-full -mr-4 border border-slate-100 shadow-inner" />
           ))}
@@ -205,7 +206,7 @@ function BookingTicket({ booking }: { booking: any }) {
               {booking.movieId?.title}
             </h3>
           </div>
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 min-w-[140px] text-center">
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 min-w-35 text-center">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amount Paid</p>
             <p className="text-xl font-black text-slate-900">Rs. {booking.totalAmount}</p>
           </div>

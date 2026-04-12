@@ -9,6 +9,8 @@ import {
   ShieldCheck,
   MousePointerClick
 } from "lucide-react";
+import { useAuth } from "@/context/auth.context";
+
 
 const pillars = [
   {
@@ -50,6 +52,8 @@ const movies = [
 ];
 
 export default function AboutPage() {
+  const {loggedInUser}=useAuth();
+console.log("LoggedInProfile:",loggedInUser);
   return (
     <div className="relative min-h-screen text-white overflow-hidden font-sans">
 

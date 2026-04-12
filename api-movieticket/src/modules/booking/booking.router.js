@@ -30,10 +30,26 @@ bookingRouter.get(
   bookingCtrl.listAllBookings,
 );
 bookingRouter.get(
+  "/dashboard/summary",
+  //auth(USER_ROLES.ADMIN),
+  bookingCtrl.getDashboardSummary
+);
+bookingRouter.get(
+  "/stats/top-movies",
+  bookingCtrl.getTopPerformingMovies,
+);
+bookingRouter.get(
+    "/stats/payment-breakdown", 
+    bookingCtrl.getPaymentBreakdown,
+);
+bookingRouter.get("/stats/weekly-revenue", bookingCtrl.getWeeklyRevenue);
+bookingRouter.get(
   "/:bookingId",
   // auth([USER_ROLES.ADMIN, USER_ROLES.CUSTOMER]),
   bookingCtrl.getBookingDetails,
 );
+
+
 bookingRouter.post(
   "/auto-release",
   auth([USER_ROLES.ADMIN]),

@@ -22,7 +22,7 @@ const ShowTimeCreateDTO = Joi.object({
 });
 
 const ShowTimeUpdateDTO = Joi.object({
-  movie: Joi.string().optional(),
+  movieId: Joi.string().optional(),
   screen: Joi.string().min(1).max(50).optional(),
   price: Joi.number().optional(),
   date: Joi.date().optional(),

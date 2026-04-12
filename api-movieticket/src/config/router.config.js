@@ -22,8 +22,8 @@ router.get("/", (req,res, next) => {
 router.use("/auth",authRouter)
 router.use("/banner",bannerRouter)
 router.use("/movie", movieRouter)
-router.use("/showtime",showtimeRouter)
 router.use("/upcomingmovie",upcomingMovieRouter)
+router.use("/showtime",showtimeRouter)
 router.use("/booking", bookingRouter)
 router.use("/order",orderRouter)
 router.use("/ticket",ticketRouter);

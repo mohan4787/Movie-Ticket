@@ -7,8 +7,6 @@ import {
   ClockCircleOutlined,
   HomeOutlined,
   FileImageOutlined,
-  CreditCardOutlined,
-  QrcodeOutlined,
 } from "@ant-design/icons";
 import { NavLink } from "react-router";
 
@@ -45,26 +43,11 @@ export const AdminMenu = [
   },
   {
     key: "7",
-    icon: <CreditCardOutlined />,
-    label: <NavLink to="/admin/payments">Payments</NavLink>,
-  },
-  {
-    key: "8",
     icon: <UserOutlined />,
     label: <NavLink to="/admin/users">Users</NavLink>,
   },
   {
-    key: "9",
-    icon: <QrcodeOutlined />,
-    label: <NavLink to="/admin/tickets">Tickets</NavLink>,
-  },
-  {
-    key: "10",
-    icon: <QrcodeOutlined />,
-    label: <NavLink to="/admin/tickets/scanner">Scanner</NavLink>,
-  },
-  {
-    key: "11",
+    key: "8",
     icon: <LogoutOutlined />,
     label: <NavLink to="/">Logout</NavLink>,
   },

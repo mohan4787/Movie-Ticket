@@ -28,7 +28,7 @@ class ShowTimeController {
   async listAllShowTimes(req, res, next) {
     try {
       let filter = {};
-      if (req.query.movie) filter.movie = req.query.movie;
+      if (req.query.movieId) filter.movieId = req.query.movieId;
       if (req.query.date) filter.date = new Date(req.query.date);
       if (req.query.status) filter.status = req.query.status;
 
@@ -51,12 +51,9 @@ class ShowTimeController {
   async getShowTimeById(req, res, next) {
     console.log("i am here");
     
-    try {
-      // console.log("here we go:",data);
-      const showtime = await ShowTimeModel.findById(req.params.showtimeId);
-console.log(showtime);
-
-
+    try {;
+      const showtime = await ShowTimeModel.findById(req.params.showtimeId)
+      .populate("movieId", "title poster")
 
       if (!showtime) {
         return res.status(404).json({
@@ -97,8 +94,6 @@ console.log(showtime);
         req,
         oldShowTime
       );
-
-      // ⚠️ Optional: regenerate seats ONLY if screen changes
       if (payload.screen && payload.screen !== oldShowTime.screen) {
         payload.seats = this.generateSeats(payload.screen);
       }
@@ -139,7 +134,7 @@ console.log(showtime);
   async getShowTimesByMovie(req, res, next) {
     try {
       const showtimes = await showtimeSvc.listAllRowsByFilter({
-        movie: req.params.movieId,
+        movieId: req.params.movieId,
         status: "active",
       });
 

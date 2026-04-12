@@ -1,5 +1,4 @@
 'use client';
-// import { Controller, useController } from "react-hook-form";
 import { Button, Input, Radio, Select, Upload } from "antd";
 import { InputType } from "../../config/constants.config";
 import { UploadOutlined } from "@ant-design/icons";
@@ -124,15 +123,19 @@ export const RadioButtonField = ({
   errMsg = "",
   options,
 }: Readonly<ISelectOptionProps>) => {
-  const { field } = useController({
-    name: name,
-    control: control,
-  });
+  const { field } = useController({ name, control });
+
   return (
-    <>
-      <Radio.Group {...field} options={options} />
+    <div className="flex flex-col gap-1 w-full">
+      <Radio.Group {...field} className="flex flex-wrap">
+        {options.map((opt) => (
+          <Radio key={opt.value} value={opt.value}>
+            <span className="text-white">{opt.label}</span>
+          </Radio>
+        ))}
+      </Radio.Group>
       <span className="text-sm text-red-700 italic">{errMsg}</span>
-    </>
+    </div>
   );
 };
 
@@ -141,30 +144,34 @@ export const SingleFiledUpload = ({
   control,
   errMsg = "",
   setThumbUrl = () => {},
-}: Readonly<IInputProps>) => {
-  return (
-    <>
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => {
-          return (
-            <>
-              <Upload
-                className="w-full"
-                beforeUpload={(file) => {
-                  field.onChange(file);
-                  setThumbUrl(URL.createObjectURL(file));
-                  return false;
-                }}
-              >
-                <Button icon={<UploadOutlined />}>Select A File</Button>
-              </Upload>
-              <span className="text-sm text-red-700 italic">{errMsg}</span>
-            </>
-          );
-        }}
-      />
-    </>
-  );
-};
+}: Readonly<IInputProps>) => (
+  <Controller
+    name={name}
+    control={control}
+    render={({ field }) => (
+      <div className="flex flex-col gap-1 w-full custom-upload">
+        <Upload
+          beforeUpload={(file) => {
+            field.onChange(file);
+            setThumbUrl(URL.createObjectURL(file));
+            return false;
+          }}
+          maxCount={1}
+        >
+          <Button icon={<UploadOutlined />} className="bg-white/10 text-white border-white/20">
+            Select A File
+          </Button>
+        </Upload>
+        <style jsx global>{`
+          .custom-upload .ant-upload-list-item-name { 
+            color: white !important; 
+          }
+          .custom-upload .ant-upload-list-item-card-actions-btn {
+            color: white !important;
+          }
+        `}</style>
+        <span className="text-sm text-red-700 italic">{errMsg}</span>
+      </div>
+    )}
+  />
+);

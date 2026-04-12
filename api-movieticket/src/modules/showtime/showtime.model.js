@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const { Status } = require("../../config/constants");
 const { ref } = require("pdfkit");
 
-// ✅ Seat Sub Schema
 const SeatSchema = new mongoose.Schema({
   seatNumber: {
     type: String,
@@ -73,6 +72,6 @@ const ShowTimeSchema = new mongoose.Schema(
   }
 );
 
-const ShowTimeModel = mongoose.model("ShowTime", ShowTimeSchema);
+const ShowTimeModel = mongoose.model("Showtime", ShowTimeSchema);
 
 module.exports = ShowTimeModel;
