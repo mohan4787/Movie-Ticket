@@ -8,7 +8,6 @@ class ShowTimeController {
     try {
       let payload = await showtimeSvc.transformShowTimeCreateData(req);
 
-      // ✅ Generate seats here
       payload.seats = generateSeat(payload.screen);
 
       const showtime = await showtimeSvc.create(payload);
@@ -49,8 +48,6 @@ class ShowTimeController {
   }
 
   async getShowTimeById(req, res, next) {
-    console.log("i am here");
-    
     try {;
       const showtime = await ShowTimeModel.findById(req.params.showtimeId)
       .populate("movieId", "title poster")
@@ -197,9 +194,6 @@ class ShowTimeController {
   async getAllShowTimeByMovieId(req, res, next) {
     try {
       const movieId = req.params.movieId;
-      console.log("i am bre");
-      
-
       const getAllShowTime = await ShowTimeModel.find({ movieId: movieId });
 
       res.json({

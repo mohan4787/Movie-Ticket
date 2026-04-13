@@ -76,7 +76,7 @@ const LoginForm = () => {
 
         <div className="flex justify-end">
           <NavLink
-            to="/forget-password"
+            to="http://localhost:3000/forget-password"
             className="text-xs text-gray-300 hover:text-white hover:underline"
           >
             Forgot Password?

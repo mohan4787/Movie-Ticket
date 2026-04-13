@@ -15,7 +15,6 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- NEW STATES FOR FILTERING & PAGINATION ---
   const [searchDate, setSearchDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3; 
@@ -33,7 +32,11 @@ export default function MyBookingsPage() {
       const confirmedOnly = allData.filter((b: any) => b.bookingStatus === "confirmed");
       setBookings(confirmedOnly);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to load bookings");
+      if (!loggedInUser) {
+        toast.error("Please login first!");
+      }else{
+        toast.error(error.response?.data?.message || "Failed to load bookings");
+      }
     } finally {
       setLoading(false);
     }
@@ -43,7 +46,6 @@ export default function MyBookingsPage() {
     fetchBookings();
   }, [fetchBookings]);
 
-  // --- FILTERING LOGIC ---
   const filteredBookings = useMemo(() => {
     if (!searchDate) return bookings;
     return bookings.filter((booking) => {
@@ -52,14 +54,13 @@ export default function MyBookingsPage() {
     });
   }, [bookings, searchDate]);
 
-  // --- PAGINATION LOGIC ---
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const paginatedBookings = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredBookings.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredBookings, currentPage]);
 
-  // Reset to page 1 when search changes
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [searchDate]);
@@ -86,7 +87,7 @@ export default function MyBookingsPage() {
             </p>
           </div>
 
-          {/* --- SEARCH BY DATE --- */}
+          
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             <div className="relative w-full sm:w-64">
               <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -128,7 +129,7 @@ export default function MyBookingsPage() {
           </div>
         )}
 
-        {/* --- PAGINATION CONTROLS --- */}
+       
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-center gap-4">
             <button 

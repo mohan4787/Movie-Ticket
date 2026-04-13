@@ -22,7 +22,6 @@ class BannerController {
       if (req.query.search) {
         filter = {
           ...filter,
-          // title: new RegExp(req.query.search, "i"),
           title: { [Option.iLink]: `%${req.query.search}%` },
         };
       }
@@ -59,21 +58,6 @@ class BannerController {
       };
     }
   }
-
-  // async getBannerDetailsById(req, res, next) {
-  //   try {
-  //     await this.#getBannerDetail(req.params.bannerId);
-  //     res.json({
-  //       data: this.#bannerDetail,
-  //       message: "Banner details fetched successfully",
-  //       status: "BANNER_DETAILS_FETCHED",
-  //       options: null,
-  //     });
-  //   } catch (exception) {
-  //     next(exception);
-  //   }
-  // }
-
   getBannerDetailsById = async (req, res) => {
     try {
       const id = req.params.bannerId;
@@ -93,7 +77,6 @@ class BannerController {
   try {
     const bannerId = req.params.bannerId;
 
-    // Fetch the banner
     const banner = await bannerSvc.getSingleRowByFilter({ _id: bannerId });
 
     if (!banner) {
@@ -105,7 +88,6 @@ class BannerController {
       });
     }
 
-    // Transform the update data (handles uploaded image if present)
     const payload = await bannerSvc.transformUpdateBannerData(req, banner);
 
     // Update the banner in DB

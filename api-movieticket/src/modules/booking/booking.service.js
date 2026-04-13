@@ -1,7 +1,6 @@
 const BaseService = require("../../services/base.service");
 const Booking = require("./booking.model");
 const { getIO } = require("../../utilities/socket");
-const ticketService = require("../ticket/ticket.service");
 const ShowTimeModel = require("../showtime/showtime.model");
 
 class BookingService extends BaseService {
@@ -13,16 +12,13 @@ async holdSeats(data) {
   const { movieId, showtimeId, seats, userId, totalAmount } = data;
   const seatNumbers = seats.map(s => s.seatNumber);
 
-  // 1. Validation
   if (!movieId || !showtimeId || !userId || !Array.isArray(seats) || seats.length === 0) {
     throw new Error("Invalid input data");
   }
 
-  // Set expiry time: Current Time + 5 Minutes
   const EXPIRY_TIME_MS = 5 * 60 * 1000; 
   const expiresAt = new Date(Date.now() + EXPIRY_TIME_MS);
 
-  // 2. Conflict Check
   const conflict = await this.model.findOne({
     showtimeId,
     "seats.seatNumber": { $in: seatNumbers },
@@ -36,7 +32,6 @@ async holdSeats(data) {
     throw new Error("Some seats are already reserved or booked by another user");
   }
 
-  // 3. Create the Booking entry (Status: reserved)
   const booking = await this.model.create({
     userId,
     movieId,
@@ -48,17 +43,14 @@ async holdSeats(data) {
     })),
     createdBy: userId,
     bookingStatus: "reserved",
-    expiresAt, // Store the expiry time
+    expiresAt, 
   });
 
-  // 4. Update the Showtime document's seat statuses to 'reserved'
   await ShowTimeModel.updateOne(
     { _id: showtimeId },
     { $set: { "seats.$[elem].status": "reserved" } },
     { arrayFilters: [{ "elem.seatNumber": { $in: seatNumbers } }] }
   );
-
-  // 5. Real-time update via Socket.io
   const io = getIO();
   if (io) {
     io.to(showtimeId.toString()).emit("seat_locked", {
@@ -67,26 +59,19 @@ async holdSeats(data) {
     });
   }
 
-  // 6. Automatic Release Mechanism (After 5 Minutes)
   setTimeout(async () => {
-    // Check if the booking is still just 'reserved' (not 'confirmed')
     const currentBooking = await this.model.findById(booking._id);
     
     if (currentBooking && currentBooking.bookingStatus === "reserved") {
-      // 1. Revert Showtime seats to 'available'
       await ShowTimeModel.updateOne(
         { _id: showtimeId },
         { $set: { "seats.$[elem].status": "available" } },
         { arrayFilters: [{ "elem.seatNumber": { $in: seatNumbers } }] }
       );
-
-      // 2. Update Booking Status to 'cancelled' or 'expired'
       await this.model.updateOne(
         { _id: booking._id },
         { $set: { bookingStatus: "cancelled" } }
       );
-
-      // 3. Notify via Socket.io that seats are now free
       if (io) {
         io.to(showtimeId.toString()).emit("seat_released", {
           seats: seatNumbers,

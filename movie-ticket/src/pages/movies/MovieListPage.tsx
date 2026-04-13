@@ -81,7 +81,7 @@ const MovieListPage = () => {
         description: "Movie has been removed from the database",
       });
 
-      // 🔥 Refresh list after delete
+      
       await getMovieList({
         page: pagination.current,
         limit: pagination.pageSize,
@@ -96,7 +96,7 @@ const MovieListPage = () => {
     }
   };
 
-  // ✅ Table columns
+ 
   const columns = [
     {
       key: "title",
@@ -147,7 +147,6 @@ const MovieListPage = () => {
       dataIndex: "rating",
     },
 
-    // ✅ View Showtime Button Column
     {
       key: "viewShowtime",
       title: "View Showtime",
@@ -159,7 +158,6 @@ const MovieListPage = () => {
       ),
     },
 
-    // ✅ Action Column
     {
       key: "action",
       title: "#",
@@ -220,7 +218,7 @@ const MovieListPage = () => {
         </div>
       </div>
 
-      {/* Table */}
+     
       <div className="flex flex-col">
         <Table
           columns={columns}

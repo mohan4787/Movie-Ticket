@@ -185,7 +185,7 @@ const UpComingMovieForm = ({
             />
           </div>
         </div>
-        <div className="flex w-full">
+        {/* <div className="flex w-full">
           <label className="w-1/3">Pre Booking:{""}</label>
           <div className="w-2/3">
             <SelectOptionsField
@@ -198,7 +198,7 @@ const UpComingMovieForm = ({
               errMsg={errors?.preBookingAvailable?.message}
             />
           </div>
-        </div>
+        </div> */}
         <div className="flex w-full">
           <label className="w-1/3">Status:{""}</label>
           <div className="w-2/3">

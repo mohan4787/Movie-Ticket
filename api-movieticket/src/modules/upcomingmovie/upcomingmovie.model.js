@@ -42,10 +42,10 @@ const UpcomingMovieSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  preBookingAvailable: {
-    type: Boolean,
-    default: false,
-  },
+  // preBookingAvailable: {
+  //   type: Boolean,
+  //   default: false,
+  // },
   status: {
     type: String,
     enum: Object.values(Status),

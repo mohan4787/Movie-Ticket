@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { 
   Table, Tag, Avatar, Button, message, Input, Card, 
   Space, Tooltip, Breadcrumb, Badge, Typography 
@@ -168,12 +168,12 @@ const UserList = () => {
         </div>
       </div>
 
-      {/* Main Content Card */}
+      
       <Card 
         className="shadow-xl shadow-slate-200/50 border-0 rounded-2xl overflow-hidden"
         bodyStyle={{ padding: '0' }}
       >
-        {/* Filter Bar */}
+      
         <div className="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 bg-white">
           <Input 
             placeholder="Quick search members..." 
@@ -186,7 +186,7 @@ const UserList = () => {
           </div>
         </div>
 
-        {/* Table Section */}
+        
         <Table
           dataSource={users}
           columns={columns}

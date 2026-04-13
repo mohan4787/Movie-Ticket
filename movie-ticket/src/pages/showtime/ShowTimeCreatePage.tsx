@@ -12,11 +12,10 @@ export interface IShowTimeCreateData {
   endTime: string;
 }
 
-// ✅ FIXED schema
 const ShowTimeCreateDTO = Yup.object({
   movieId: Yup.string().required("Movie ID is required"),
   screen: Yup.string().min(1).max(50).required("Screen is required"),
-  date: Yup.string().required("Date is required"), // ✅ FIXED
+  date: Yup.string().required("Date is required"), 
   startTime: Yup.string()
     .matches(
       /^([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/,
@@ -33,10 +32,8 @@ const ShowTimeCreateDTO = Yup.object({
 
 
 const submitForm = async (data: IShowTimeCreateData) => {
-  // const navigate = useNavigate();
+  
   try {
-    // console.log("🚀 SUBMIT DATA:", data); // ✅ DEBUG
-
     await showtimeService.postRequest("showtime", data, {
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +43,7 @@ const submitForm = async (data: IShowTimeCreateData) => {
     toast.success("ShowTime Created Successfully", {
       description: "ShowTime has been added to the database",
     });
-    // navigate(`/admin/movie`);
+    
   } catch (exception: any) {
     toast.error("Failed to create showtime");
   }

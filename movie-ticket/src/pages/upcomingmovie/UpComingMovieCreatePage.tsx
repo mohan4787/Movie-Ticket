@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import upcomingmovieService from "../../services/upcomingmovie.service";
 import UpComingMovieForm from "../../components/upcomingmovie/UpComingMovieForm";
 
-// Yup DTO aligned with backend
+
 export const UpcomingMovieCreateDTO = Yup.object({
   title: Yup.string().min(2).max(100).required(),
   description: Yup.string().nullable(),
@@ -37,15 +37,15 @@ const UpComingMovieCreatePage = () => {
         const value = data[key];
         if (value !== undefined && value !== null) {
           if (key === "genre") {
-            // backend expects array
+            
             formData.append(key, JSON.stringify(data.genre));
           } else if (key === "preBookingAvailable") {
-            // boolean must be string "true"/"false"
+            
             formData.append(key, value ? "true" : "false");
           } else if (key === "poster" && value instanceof File) {
             formData.append("poster", value);
           } else if (key === "expectedReleaseDate") {
-            // ensure ISO date string
+           
             formData.append(key, new Date(value).toISOString());
           } else {
             formData.append(key, value);

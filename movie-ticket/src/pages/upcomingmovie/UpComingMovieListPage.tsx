@@ -46,7 +46,7 @@ const UpComingMovieListPage = () => {
       const response = await upcomingmovieService.getRequest("/upcomingmovie", {
         params: { page, limit, search },
       });
-      // console.log("i am here:",response);
+     
       
       const resData = response?.data || [];
       console.log("Fetched movies array:", resData);
@@ -145,17 +145,6 @@ const UpComingMovieListPage = () => {
         />
       ),
     },
-    //  {
-    //   key: "poster",
-    //   title: "Poster",
-    //   dataIndex: "poster",
-    //   render: (val: any) => (
-    //     <img
-    //       src={val?.optimizedUrl || "https://placehold.com/80x120"}
-    //       className="max-w-20 h-auto"
-    //     />
-    //   ),
-    // },
     {
       key: "genre",
       title: "Genre",

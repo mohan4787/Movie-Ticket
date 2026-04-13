@@ -9,7 +9,7 @@ const UpcomingMovieCreateDTO = Joi.object({
     language: Joi.string().default("English"),
     poster: Joi.string().allow(null, "").default(null),
     teaserUrl: Joi.string().uri().allow(null, "").default(null),
-    preBookingAvailable: Joi.boolean().default(false),
+   // preBookingAvailable: Joi.boolean().default(false),
     status: Joi.string().regex(/^(active|inactive)$/).default("inactive"),
 })
 
@@ -22,7 +22,7 @@ const UpcomingMovieUpdateDTO = Joi.object({
     language: Joi.string().default("English"),
     poster: Joi.string().allow(null, "").default(null),
     teaserUrl: Joi.string().uri().allow(null, "").default(null),
-    preBookingAvailable: Joi.boolean().default(false),
+    //preBookingAvailable: Joi.boolean().default(false),
     status: Joi.string().regex(/^(active|inactive)$/).default("inactive"),
 })
 

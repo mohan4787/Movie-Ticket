@@ -7,7 +7,6 @@ import authSvc from '../../services/auth.service';
 
 const { Title, Text } = Typography;
 
-// --- Interfaces ---
 interface IUser {
   _id: string;
   name: string;
@@ -43,19 +42,17 @@ const BookingList: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // Optimized Fetch function
   const fetchBookings = useCallback(async (page: number, limit: number) => {
     setLoading(true);
     try {
-      // IMPORTANT: Passing template literals to getRequest
       const response = await authSvc.getRequest(`booking?page=${page}&limit=${limit}`);
 
       if (response.status === "BOOKING_LIST_FETCHED") {
-        // Ensure you are reaching the array in: response.data.data
+       
         const result = response.data?.data || [];
         setBookings(result);
         
-        // Map total from your backend pagination object
+        
         setTotal(response.data?.pagination?.total || 0);
       }
     } catch (error) {
@@ -66,16 +63,15 @@ const BookingList: React.FC = () => {
     }
   }, []);
 
-  // Initial Load
+  
   useEffect(() => {
     fetchBookings(currentPage, pageSize);
   }, [fetchBookings, currentPage, pageSize]);
 
-  // Handle page/limit change
   const handleTableChange = (pagination: any) => {
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);
-    // The useEffect will trigger fetchBookings automatically due to dependency array
+    
   };
 
   const columns = [
@@ -172,7 +168,7 @@ const BookingList: React.FC = () => {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: total, // Set to 57 from backend
+            total: total, 
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} items`,
           }}

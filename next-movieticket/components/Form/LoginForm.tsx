@@ -122,6 +122,15 @@ const LoginForm = () => {
           Register now
         </Link>
       </p>
+      <p className="text-center text-sm text-gray-300">
+        Login as {" "}
+        <Link
+          href="http://localhost:5173/"
+          className="text-red-400 hover:text-red-500 hover:underline"
+        >
+          Admin
+        </Link>
+      </p>
     </>
   );
 };

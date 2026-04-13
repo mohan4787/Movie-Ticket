@@ -5,7 +5,6 @@ class OrderController {
   async createOrder(req, res, next) {
     try {
       const payload = req.body;
-      
 
       const order = await orderService.createOrder(payload);
 
@@ -18,7 +17,7 @@ class OrderController {
       next(err);
     }
   }
- async initiatePayment(req, res, next) {
+  async initiatePayment(req, res, next) {
     try {
       const orderId = req.params.orderId;
       const data = await orderService.initiatePayment(orderId);
@@ -32,7 +31,7 @@ class OrderController {
       next(err);
     }
   }
-   async verifyPayment(req, res, next) {
+  async verifyPayment(req, res, next) {
     try {
       const { pidx } = req.body;
       const result = await orderService.verifyPayment({ pidx });
@@ -46,7 +45,6 @@ class OrderController {
       next(err);
     }
   }
-
 
   async getMyOrders(req, res, next) {
     try {
@@ -62,20 +60,18 @@ class OrderController {
     }
   }
 
-  async getAllOrders(req, res, next) 
-    {
-try {
-   const getAllOrders = await orderModel.find();
-   res.status(200).json({
+  async getAllOrders(req, res, next) {
+    try {
+      const getAllOrders = await orderModel.find();
+      res.status(200).json({
         data: getAllOrders,
         message: "All orders fetched successfully",
         status: "ORDERS_FETCHED",
       });
-
-} catch (exception) {
-  throw exception;
-}
+    } catch (exception) {
+      throw exception;
     }
+  }
 }
 
 module.exports = new OrderController();

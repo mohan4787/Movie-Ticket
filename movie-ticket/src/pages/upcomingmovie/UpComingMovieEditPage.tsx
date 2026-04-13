@@ -35,7 +35,7 @@ const UpcomingMovieEditPage = () => {
   const [movieDetail, setMovieDetail] = useState<IUpcomingMovieData>();
   const formMethods = useForm<IUpcomingMovieData>();
 
-  // Submit form
+ 
   const submitForm = async (data: IUpcomingMovieData) => {
     try {
       const formData = new FormData();
@@ -83,7 +83,7 @@ const UpcomingMovieEditPage = () => {
     }
   };
 
-  // Fetch existing movie detail
+  
   const getMovieDetail = async () => {
     try {
       const response = await upcomingmovieService.getRequest(

@@ -39,7 +39,6 @@ function VerifyContent() {
           }
         );
 
-        // Check if response confirms it's already paid or newly success
         const isPaid = response.data?.paymentStatus === "paid" || response.data?.data?.paymentStatus === "paid";
         const isNewSuccess = response.status === "PAYMENT_SUCCESS";
         
@@ -47,7 +46,7 @@ function VerifyContent() {
           const data = response.data?.data?.data || response.data?.data;
           
           setOrderDetails(data);
-          setIsAlreadyVerified(isPaid && !isNewSuccess); // If it's paid but not a "new" success, it's a re-hit
+          setIsAlreadyVerified(isPaid && !isNewSuccess); 
           setStatus("success");
           
           if (!isPaid || isNewSuccess) {
@@ -61,7 +60,7 @@ function VerifyContent() {
         const errorData = error.response?.data;
         const errorMsg = errorData?.data?.message?.toLowerCase() || errorData?.message?.toLowerCase() || "";
 
-        // If backend returns error because it's already verified, treat as success but show "Already Verified"
+        
         if (errorMsg.includes("already verified") || errorData?.data?.paymentStatus === "paid") {
           const data = errorData?.data?.data || errorData?.data;
           setOrderDetails(data);
@@ -101,7 +100,7 @@ function VerifyContent() {
               </div>
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight italic uppercase tracking-tighter">Verifying</h2>
+              <h2 className="text-2xl font-black text-slate-900  italic uppercase tracking-tighter">Verifying</h2>
               <p className="text-slate-400 text-sm mt-2 font-medium">Securing your seats...</p>
             </div>
           </div>

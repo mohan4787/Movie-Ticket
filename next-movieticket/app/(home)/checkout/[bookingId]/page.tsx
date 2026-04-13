@@ -22,7 +22,7 @@ export default function MovieCheckoutPage({ params }: any) {
   const [loading, setLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
 
-  // 1. Fetch Booking Details to display Movie Name and Seats
+ 
   useEffect(() => {
     const fetchBookingInfo = async () => {
       try {
@@ -42,13 +42,13 @@ export default function MovieCheckoutPage({ params }: any) {
     if (bookingId) fetchBookingInfo();
   }, [bookingId]);
 
-  // 2. Main Logic: Create Order -> Initiate Payment -> External Redirect
+  
   const handleCheckoutProcess = async () => {
     if (!bookingData) return;
 
     setIsPaying(true);
     try {
-      // Step A: Create Order
+     
       const orderResponse = await authSvc.postRequest(
         `/order`,
         {
@@ -60,8 +60,6 @@ export default function MovieCheckoutPage({ params }: any) {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ` + localStorage.getItem("_at_movieticket"),
-              // "Content-Type": "application/json",
-              // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV`,
           },
         },
       );
@@ -71,27 +69,25 @@ export default function MovieCheckoutPage({ params }: any) {
 
       if (!orderId) throw new Error("Order creation failed.");
 
-      // Step B: Initiate Payment
+    
       const paymentResponse = await authSvc.postRequest(
         `/order/initiate-payment/${orderId}`,
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ` + localStorage.getItem("_at_movieticket"),
-            // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV `,
+            "Authorization": `Bearer ` + localStorage.getItem("_at_movieticket")
           },
         },
       );
 
-      // Your log shows: { pidx: '...', payment_url: '...' } at top level
+      
       const paymentData = paymentResponse.data;
 
-      // Step C: Redirect to Khalti URL
+   
       if (paymentData && paymentData.payment_url) {
         toast.success("Redirecting to Khalti Secure Gateway...");
 
-        // CRITICAL: Use window.location.href for external domains (like Khalti)
-        // Next.js router.push only works for internal pages
+      
         window.location.href = paymentData.payment_url;
       } else {
         console.error("Payment Data Mismatch:", paymentData);

@@ -9,7 +9,7 @@ import showtimeService from "../../services/showtime.service";
 import ShowTimeForm from "../../components/showtime/ShowTimeForm";
 
 
-// ShowTime DTO Type
+
 export interface IShowTimeCreateData {
   movie: string;
   screen: string;

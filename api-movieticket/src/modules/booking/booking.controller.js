@@ -57,8 +57,6 @@ class BookingController {
   async listAllBookings(req, res, next) {
     try {
       let filter = {};
-
-      // 1. Handle existing filters
       if (req.query.userId) {
         filter.createdBy = req.query.userId;
       }
@@ -67,22 +65,19 @@ class BookingController {
         filter.bookingStatus = req.query.status;
       }
 
-      // 2. Extract Pagination Params
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
 
-      // 3. Calculate Skip (Crucial for data to actually change)
       const skip = (page - 1) * limit;
 
-      // 4. Pass options to the service
       const bookings = await bookingSvc.getMultipleRowsByFilter(filter, {
         limit: limit,
         skip: skip,
-        sort: { createdAt: -1 }, // Optional: keeps newest bookings at the top
+        sort: { createdAt: -1 }, 
       });
 
       res.json({
-        data: bookings, // bookings now contains { data, pagination }
+        data: bookings, 
         message: "Booking list fetched successfully",
         status: "BOOKING_LIST_FETCHED",
         options: null,
@@ -194,8 +189,7 @@ async getTopPerformingMovies(req, res, next) {
     const topMovies = await BookingModel.aggregate([
       // 1. Only count confirmed bookings
       { $match: { bookingStatus: 'confirmed' } },
-      
-      // 2. Group by movieId and calculate total sales & ticket count
+    
       {
         $group: {
           _id: "$movieId",
@@ -204,26 +198,19 @@ async getTopPerformingMovies(req, res, next) {
         }
       },
 
-      // 3. Join with Movies collection to get the Title
       {
         $lookup: {
-          from: "movies", // Ensure this matches your MongoDB collection name
+          from: "movies", 
           localField: "_id",
           foreignField: "_id",
           as: "movieDetails"
         }
       },
 
-      // 4. Flatten the movieDetails array
       { $unwind: "$movieDetails" },
-
-      // 5. Sort by sales descending
       { $sort: { sales: -1 } },
 
-      // 6. Limit to top 5 or 10
       { $limit: 5 },
-
-      // 7. Project only the fields needed for the Recharts BarChart
       {
         $project: {
           _id: 0,
@@ -257,14 +244,12 @@ async getWeeklyRevenue(req, res, next) {
             },
             {
                 $group: {
-                    _id: { $dayOfWeek: "$createdAt" }, // Returns 1 (Sun) to 7 (Sat)
+                    _id: { $dayOfWeek: "$createdAt" },
                     rev: { $sum: "$totalAmount" }
                 }
             },
-            { $sort: { "_id": 1 } } // Sort Sun to Sat
+            { $sort: { "_id": 1 } } 
         ]);
-
-        // Map numeric day to String name for Recharts
         const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const formattedData = weeklyStats.map(item => ({
             day: dayNames[item._id - 1],

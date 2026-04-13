@@ -53,7 +53,7 @@ class UpcomingMovieService extends BaseService {
       language: row.language,
       expectedReleaseDate: row.expectedReleaseDate,
       teaserUrl: row.teaserUrl || null,
-      preBookingAvailable: row.preBookingAvailable || false,
+     // preBookingAvailable: row.preBookingAvailable || false,
       status: row.status,
       poster: row.poster || null,
 

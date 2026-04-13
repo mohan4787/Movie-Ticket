@@ -36,7 +36,6 @@ const TicketPage = () => {
   const generateTickets = async () => {
     try {
       setLoading(true);
-      // This endpoint should trigger your TicketService.createTickets(booking)
       const response = await ticketService.postRequest(`ticket/generate`, { bookingId });
       
       if (response.status === "TICKET_GENERATED" || response.data) {
@@ -89,10 +88,8 @@ const TicketPage = () => {
             bodyStyle={{ padding: 0 }}
           >
             <div className="flex flex-col sm:flex-row">
-              {/* QR Section */}
               <div className="bg-white p-6 flex flex-col items-center justify-center border-b sm:border-b-0 sm:border-r border-dashed border-gray-200">
                 <div className="bg-white p-2 border-2 border-slate-100 rounded-xl">
-                  {/* Using your qrCode string from backend */}
                   <img src={ticket.qrCode} alt="QR Code" className="w-32 h-32" />
                 </div>
                 <Text className="mt-2 text-[10px] font-mono text-slate-400 uppercase">
@@ -100,9 +97,9 @@ const TicketPage = () => {
                 </Text>
               </div>
 
-              {/* Info Section */}
+             
               <div className="flex-1 p-6 relative bg-white">
-                {/* Visual Ticket Notch */}
+                
                 <div className="hidden sm:block absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-100 rounded-full"></div>
                 
                 <div className="flex justify-between items-start mb-4">

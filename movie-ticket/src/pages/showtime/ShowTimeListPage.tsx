@@ -28,12 +28,12 @@ const ShowTimeListPage = () => {
   const [pagination, setPagination] = useState<IPaginationType>({
     current: PaginationDefault.page,
     pageSize: PaginationDefault.limit,
-    total: 0, // Default to 0
+    total: 0, 
   });
   
   const { id } = useParams<{ id: string }>();
 
-  // Use callback to prevent unnecessary re-renders
+  
   const getShowTimeList = useCallback(async ({
     page = PaginationDefault.page,
     limit = PaginationDefault.limit,
@@ -41,7 +41,7 @@ const ShowTimeListPage = () => {
   }: IPaginationWithSearchType) => {
     setLoading(true);
     try {
-      // Dynamic endpoint: if an 'id' exists in URL, use specific movie route
+      
       const endpoint = id ? `/showtime/${id}` : "/showtime";
       
       const response = await showtimeService.getRequest(endpoint, {
@@ -52,7 +52,7 @@ const ShowTimeListPage = () => {
       
       setData(response.data || []);
       
-      // Safety check for pagination metadata to prevent 500 crashes
+     
       if (response.options?.pagination) {
         setPagination({
           current: Number(response.options.pagination.current) || page,
@@ -69,7 +69,6 @@ const ShowTimeListPage = () => {
     }
   }, [id]);
 
-  // Handle Search Debounce
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       getShowTimeList({

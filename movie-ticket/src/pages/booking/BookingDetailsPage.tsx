@@ -112,7 +112,7 @@ const BookingDetail: React.FC = () => {
               <Text className="text-blue-100 uppercase tracking-widest text-xs block font-semibold">
                 Booking Reference
               </Text>
-              <Title level={3} className="m-0 !text-white font-mono">
+              <Title level={3} className="m-0 `text-white!` font-mono">
                 {booking._id}
               </Title>
             </div>
@@ -171,7 +171,7 @@ const BookingDetail: React.FC = () => {
               
               <div className="flex justify-between items-center mb-6">
                 <Title level={4} className="m-0">Total Paid</Title>
-                <Title level={3} className="m-0 !text-blue-600">Rs. {booking.totalAmount}</Title>
+                <Title level={3} className="m-0 `text-blue-600!`">Rs. {booking.totalAmount}</Title>
               </div>
 
               <div className="bg-white p-3 rounded border flex items-start gap-2">

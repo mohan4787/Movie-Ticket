@@ -8,7 +8,7 @@ import authSvc from "@/services/auth.service";
 import { log } from "console";
 import { useAuth } from "@/context/auth.context";
 
-// --- Interfaces ---
+
 interface Seat {
   seatNumber: string;
   status: "available" | "booked" | "reserved";
@@ -43,7 +43,7 @@ export default function MovieBookingSystem() {
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 1. Fetch Showtime and Movie Data
+  
   useEffect(() => {
     if (!showtimeId) return;
 
@@ -71,7 +71,7 @@ export default function MovieBookingSystem() {
     fetchData();
   }, [showtimeId]);
 
-  // 2. Group Seats by Row
+ 
   const rows = useMemo(() => {
     if (!showtime?.seats) return [];
     
@@ -103,15 +103,15 @@ export default function MovieBookingSystem() {
     );
   };
 
-  // 3. Handle Reservation and Redirect
+ 
   const handleProceedPayment = async () => {
     if (!showtime || selectedSeats.length === 0) return;
 
     setIsProcessing(true);
     try {
-      // Structure based on your provided Backend Requirement
+     
       const payload = {
-        userId: loggedInUser?._id, // Hardcoded per your example, or get from Auth context
+        userId: loggedInUser?._id, 
         movieId: showtime.movieId,
         showtimeId: showtime._id,
         seats: selectedSeats.map((num) => ({ seatNumber: num })),
@@ -122,11 +122,10 @@ export default function MovieBookingSystem() {
         headers: {
          "Content-Type": "application/json",
              "Authorization": `Bearer `+ localStorage.getItem("_at_movieticket"), 
-            // "Authorization": `Bearer hGevRfJxz72YnFeyIISRKbZSeMqZlundefinedsuOundefinedEAkTundefinedYjK3k62o2Gw3undefinedvBG8DZHVzLiEMGytw4olGX3zzto7y96iSfimiv1undefinedundefinedA7b9tgwvCkjZI2y2xrfTdCsyBNnftundefined9LQaTP8mb7bP8nYX1XPgundefinedYJmILV `
         },
       });
       
-      // Navigate to the checkout page with the booking ID returned by backend
+      
       const bookingId = res.data?._id || res.data?.data?._id ;
       console.log("Booking response:", res);
       
@@ -135,7 +134,7 @@ export default function MovieBookingSystem() {
       router.push(`/checkout/${bookingId}`);
 
     } catch (err: any) {
-      // console.error("Booking error:", err);
+     
       if(!loggedInUser)
       {
         toast.error("Please login first!")
@@ -197,7 +196,7 @@ export default function MovieBookingSystem() {
                 </p>
               </div>
 
-              {/* Layout matching your 2-6-2 Requirement */}
+             
               <div className="flex flex-col gap-10 items-center overflow-x-auto pb-8">
                 {rows.map((row) => (
                   <div key={row.label} className="flex flex-col gap-5 w-full border-b border-slate-50 pb-8 last:border-0">
@@ -293,7 +292,7 @@ export default function MovieBookingSystem() {
   );
 }
 
-// --- Internal Components (Unchanged) ---
+
 function SeatItem({ seat, selected, onClick }: { seat: Seat; selected: boolean; onClick: () => void }) {
   const getStyles = () => {
     if (seat.status === "booked") return "bg-rose-500 text-white cursor-not-allowed opacity-80";

@@ -8,7 +8,6 @@ import Link from "next/link";
 import { Calendar, Clock, Film } from "lucide-react";
 import { log } from "console";
 
-// --- Interfaces ---
 interface IMovieDetail {
   _id: string;
   title: string;
@@ -28,7 +27,6 @@ export interface IShowtime {
   screen: string;
 }
 
-// --- Showtime List Component ---
 function ShowtimeList({ showtimes }: { showtimes: IShowtime[] }) {
   const grouped = useMemo(() => {
     return showtimes.reduce((acc, st) => {
@@ -77,7 +75,7 @@ function ShowtimeList({ showtimes }: { showtimes: IShowtime[] }) {
   );
 }
 
-// --- Main Page ---
+
 export default function MovieDetailPage() {
   const params = useParams();
   const movieId = params?.movieId as string;
@@ -148,7 +146,6 @@ export default function MovieDetailPage() {
       <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
         <div className="grid lg:grid-cols-12 gap-12 items-start">
           
-          {/* Poster */}
           <div className="lg:col-span-4 sticky top-12">
             <div className="relative group overflow-hidden rounded-2xl shadow-2xl">
               <img

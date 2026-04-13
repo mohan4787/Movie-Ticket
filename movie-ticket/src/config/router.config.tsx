@@ -19,17 +19,10 @@ import UpComingMovieEditPage from "../pages/upcomingmovie/UpComingMovieEditPage"
 import MovieEditPage from "../pages/movies/MovieEditPage";
 import ShowTimeListPage from "../pages/showtime/ShowTimeListPage";
 import ShowTimeCreatePage from "../pages/showtime/ShowTimeCreatePage";
-import TicketPage from "../pages/tickets/TicketPage";
-import ScannerPage from "../pages/tickets/ScannerPage";
-import BookingListPage from "../pages/booking/BookingListPage";
-import BookingDetailPage from "../pages/booking/BookingDetailsPage";
 import ShowTimeEditPage from "../pages/showtime/ShowTimeEditPage";
 import UserList from "../pages/users/UserListPage";
-import AdminBookingPage from "../pages/booking/BookingListPage";
 import BookingList from "../pages/booking/BookingListPage";
 import BookingDetail from "../pages/booking/BookingDetailsPage";
-// import BookingListPage from "../pages/booking/BookingListPage";
-// import BookingPage from "../pages/booking/BookingListPage";
 
 const routerConfig = createBrowserRouter([
   {
@@ -75,8 +68,6 @@ const routerConfig = createBrowserRouter([
 
       { path: "booking", Component: BookingList },
       { path: "booking-detail/:_id", Component: BookingDetail },
-      { path: "tickets", Component: TicketPage },
-      { path: "tickets/scanner", Component: ScannerPage },
       { path: "*", Component: ErrorNotFound },
     ],
   },

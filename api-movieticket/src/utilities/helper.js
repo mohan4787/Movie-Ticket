@@ -18,13 +18,10 @@ const deleteFile = (filePath) => {
 };
 const getDateRange = (query) => {
     const { startDate, endDate } = query;
-
-    // Default: If no dates, show last 30 days
     let start = startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30));
     let end = endDate ? new Date(endDate) : new Date();
 
-    start.setHours(0, 0, 0, 0);       // Start of day
-    end.setHours(23, 59, 59, 999);    // End of day
+    start.setHours(0, 0, 0, 0);       
 
     return {
         createdAt: {

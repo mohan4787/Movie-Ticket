@@ -75,20 +75,16 @@ class OrderService {
   }
 
   async verifyPayment({ pidx }) {
-    // 1️⃣ Find the order
     const order = await Order.findOne({ pidx });
     if (!order) throw new Error("Order not found");
     const BookingDetail = await BookingModel.findById(order.bookingId).populate("userId", "name email").populate("movieId", "title");
-    // console.log(orderDetails);
-    
-    // 2️⃣ Already paid
+
     if (order.paymentStatus === "paid") return {
       data: BookingDetail,
       message:"Payment already verified for this order",
       status: "ALREADY_VERIFIED",
     };
 
-    // 3️⃣ Verify with Khalti
     const { data: khaltiData } = await axios.post(
       `${PaymentConfig.khalti.url}epayment/lookup/`,
       { pidx },
@@ -106,19 +102,16 @@ class OrderService {
       throw new Error(`Payment not completed: ${khaltiData.status || "Unknown"}`);
     }
 
-    // 4️⃣ Check payment amount
     if (khaltiData.total_amount !== order.totalAmount * 100) {
       order.paymentStatus = "failed";
       await order.save();
       throw new Error("Payment amount mismatch");
     }
 
-    // 5️⃣ Mark order as paid
     order.paymentStatus = "paid";
     order.transactionId = khaltiData.transaction_id;
     await order.save();
 
-    // 6️⃣ Confirm booking
     const booking = await BookingService.confirmBooking(order.bookingId, order.userId);
   
     if (!booking || !booking.showtimeId || !booking.seats) {
@@ -135,7 +128,6 @@ const bookingDetail = await BookingModel.findById({
   _id: booking._id,
 }).populate("movieId", "title")
 
-    // 8️⃣ Return result
     return {
       orderId: order._id,
       booking:bookingDetail,

@@ -36,13 +36,4 @@ showtimeRouter.route("/getshowtime/:showtimeId").get(showtimeCtrl.getShowTimesBy
 showtimeRouter.route("/date/:date").get(showtimeCtrl.getShowTimesByDate);
 
 
-// showtimeRouter.post("/",bodyValidator(ShowTimeCreateDTO), showtimeCtrl.createShowTime);
-// showtimeRouter.get("/", showtimeCtrl.listAllShowTimes);
-// showtimeRouter.get("/movie/:movieId", showtimeCtrl.getAllShowTimeByMovieId);
-// showtimeRouter.get("/:showtimeId", showtimeCtrl.getShowTimeById);
-// showtimeRouter.put("/:showtimeId",  bodyValidator(ShowTimeUpdateDTO), showtimeCtrl.updateShowTimeById);
-// showtimeRouter.delete("/:showtimeId", showtimeCtrl.deleteShowTimeById);
-// showtimeRouter.get("/movie/:movieId", showtimeCtrl.getShowTimesByMovie);
-// showtimeRouter.get("/date/:date", showtimeCtrl.getShowTimesByDate);
-
 module.exports = showtimeRouter;

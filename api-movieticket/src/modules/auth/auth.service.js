@@ -146,11 +146,11 @@ class AuthService {
           <div style="padding: 40px 20px;">
             <p style="color: #333333; font-size: 16px; line-height: 1.6; margin-top: 0;">We received a request to reset your password. Click the button below to proceed:</p>
             <div style="margin: 30px 0; text-align: center;">
-          <a href="${AppConfig.frontendUrl}/reset-password?token=${userData.forgetPasswordToken}" style="background-color: #667eea; color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">Reset Password</a>
+          <a href="${AppConfig.nextjsUrl}/reset-password?token=${userData.forgetPasswordToken}" style="background-color: #667eea; color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">Reset Password</a>
             </div>
             <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
             <p style="color: #666666; font-size: 14px; line-height: 1.6;">If the button doesn't work, copy and paste this link in your browser:</p>
-            <p style="background-color: #f9f9f9; padding: 12px; border-left: 4px solid #667eea; word-break: break-all; color: #667eea; font-size: 13px; margin: 15px 0;">${AppConfig.frontendUrl}/reset-password?token=${userData.forgetPasswordToken}</p>
+            <p style="background-color: #f9f9f9; padding: 12px; border-left: 4px solid #667eea; word-break: break-all; color: #667eea; font-size: 13px; margin: 15px 0;">${AppConfig.nextjsUrl}/reset-password?token=${userData.forgetPasswordToken}</p>
             <p style="color: #ff6b6b; font-size: 14px; font-weight: bold; margin: 20px 0;">⏰ This link expires in 3 hours</p>
             <p style="color: #666666; font-size: 14px; line-height: 1.6;">If you did not request a password reset, please ignore this email. Your account remains secure.</p>
           </div>

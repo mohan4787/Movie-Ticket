@@ -20,9 +20,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", router);
-//const io = initSocket(server);
-
-// 404 handler
 app.use((req, res, next) => {
   next({
     code: 404,
@@ -31,7 +28,6 @@ app.use((req, res, next) => {
   });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   let code = err.statusCode || 500;
   let detail = err.detail || null;

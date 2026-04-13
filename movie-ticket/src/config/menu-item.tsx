@@ -9,6 +9,14 @@ import {
   FileImageOutlined,
 } from "@ant-design/icons";
 import { NavLink } from "react-router";
+import { toast } from "sonner";
+
+const handleSidebarLogout = () => {
+  localStorage.removeItem("_at_movieticket");
+  localStorage.removeItem("_rt_movieticket");
+  toast.success("Logged out successfully");
+  window.location.href = "/"; 
+};
 
 export const AdminMenu = [
   {
@@ -49,12 +57,7 @@ export const AdminMenu = [
   {
     key: "8",
     icon: <LogoutOutlined />,
-    label: <NavLink to="/">Logout</NavLink>,
+    label: <span onClick={handleSidebarLogout} className="block w-full">Logout</span>,
+    danger: true, 
   },
 ];
-
-
-
-
-
-
